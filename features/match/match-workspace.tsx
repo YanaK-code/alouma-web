@@ -48,7 +48,17 @@ function generateMatchResult(resume: Resume) {
 
 export function MatchWorkspace() {
   const resume = useResumeStore((state) => state.activeResume);
+  const hasHydrated = useResumeStore((state) => state.hasHydrated);
   const updateResume = useResumeStore((state) => state.updateResume);
+
+  if (!hasHydrated) {
+    return (
+      <div className="rounded-md border border-neutral-200 bg-white p-6 text-sm text-neutral-600">
+        Loading match workspace...
+      </div>
+    );
+  }
+
   const jobDescription = resume.jobMatch.jobDescription;
   const result = resume.jobMatch.result;
 

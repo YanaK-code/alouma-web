@@ -8,6 +8,16 @@ import { useResumeStore } from "@/lib/stores/resume-store";
 export default function SavedPage() {
   const activeResume = useResumeStore((state) => state.activeResume);
   const savedDrafts = useResumeStore((state) => state.savedDrafts);
+  const hasHydrated = useResumeStore((state) => state.hasHydrated);
+
+  if (!hasHydrated) {
+    return (
+      <div className="rounded-md border border-neutral-200 bg-white p-6 text-sm text-neutral-600">
+        Loading saved CVs...
+      </div>
+    );
+  }
+
   const drafts = savedDrafts.length > 0 ? savedDrafts : [activeResume];
 
   return (
