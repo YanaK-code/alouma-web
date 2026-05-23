@@ -52,6 +52,7 @@ function triggerDownload(blob: Blob) {
 
 export function PrintExportButton() {
   const [isDownloading, setIsDownloading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
   async function downloadPDF() {
     // TODO: Production PDF export must verify entitlement server-side at action time if export is premium-gated.
@@ -60,9 +61,11 @@ export function PrintExportButton() {
     );
 
     if (!frame) {
+      setMessage("CV preview is still loading. Try again in a moment.");
       return;
     }
 
+    setMessage(null);
     setIsDownloading(true);
 
     try {
@@ -113,16 +116,25 @@ export function PrintExportButton() {
       }
 
       triggerDownload(pdf.output("blob"));
+      setMessage("PDF download started.");
     } catch (error) {
       console.error("[PDFExport] Direct PDF download failed:", error);
+      setMessage("PDF export failed. The preview is still available; try downloading again.");
     } finally {
       setIsDownloading(false);
     }
   }
 
   return (
-    <Button disabled={isDownloading} onClick={() => void downloadPDF()} variant="secondary">
-      {isDownloading ? "Generating PDF..." : "Download PDF"}
-    </Button>
+    <div className="grid gap-1">
+      <Button disabled={isDownloading} onClick={() => void downloadPDF()} variant="secondary">
+        {isDownloading ? "Generating PDF..." : "Download PDF"}
+      </Button>
+      {message ? (
+        <p aria-live="polite" className="text-xs text-neutral-600">
+          {message}
+        </p>
+      ) : null}
+    </div>
   );
 }

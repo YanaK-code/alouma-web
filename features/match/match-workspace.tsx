@@ -89,6 +89,11 @@ export function MatchWorkspace() {
           <Button
             className="mt-4"
             disabled={jobDescription.trim().length === 0}
+            title={
+              jobDescription.trim().length === 0
+                ? "Paste a job description to enable match generation."
+                : undefined
+            }
             onClick={() =>
               updateResume((current) => ({
                 ...current,
@@ -101,6 +106,11 @@ export function MatchWorkspace() {
           >
             Generate Match
           </Button>
+          {jobDescription.trim().length === 0 ? (
+            <p className="mt-2 text-xs text-neutral-500">
+              Paste a job description to enable this deterministic placeholder.
+            </p>
+          ) : null}
         </Card>
         <Card>
           <h2 className="text-lg font-semibold">Mock Result</h2>

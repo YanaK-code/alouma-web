@@ -18,8 +18,10 @@ type ResumeState = {
   savedDrafts: Resume[];
   hasHydrated: boolean;
   loadDraft: () => void;
+  loadDraftById: (id: string) => boolean;
   updateResume: (update: ResumeUpdater) => void;
   saveDraft: () => void;
+  deleteDraft: (id: string) => void;
   resetDraft: () => void;
   setHasHydrated: (value: boolean) => void;
 };
@@ -157,6 +159,25 @@ export const useResumeStore = create<ResumeState>()(
         set((state) => ({
           activeResume: normalizeResume(state.activeResume),
         })),
+      loadDraftById: (id) => {
+        let didLoad = false;
+
+        set((state) => {
+          const draft = state.savedDrafts.find((item) => item.meta.id === id);
+
+          if (!draft) {
+            return state;
+          }
+
+          didLoad = true;
+
+          return {
+            activeResume: normalizeResume(draft),
+          };
+        });
+
+        return didLoad;
+      },
       updateResume: (update) =>
         set((state) => {
           const nextResume =
@@ -172,6 +193,10 @@ export const useResumeStore = create<ResumeState>()(
         set((state) => ({
           activeResume: stamp(state.activeResume),
           savedDrafts: upsertDraft(state.savedDrafts, state.activeResume),
+        })),
+      deleteDraft: (id) =>
+        set((state) => ({
+          savedDrafts: state.savedDrafts.filter((draft) => draft.meta.id !== id),
         })),
       resetDraft: () =>
         set({

@@ -54,6 +54,7 @@ export function OnboardingWizard() {
           <Button
             disabled={stepIndex === 0}
             onClick={() => setStepIndex((current) => Math.max(0, current - 1))}
+            title={stepIndex === 0 ? "Back is available after the first step." : undefined}
             variant="secondary"
           >
             Back

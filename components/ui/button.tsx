@@ -23,6 +23,7 @@ export function Button({
       className={cn(
         "inline-flex h-10 items-center justify-center rounded-md border px-4 text-sm font-medium",
         variants[variant],
+        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       type={type}
