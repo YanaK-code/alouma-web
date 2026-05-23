@@ -162,9 +162,18 @@ function EmptySection({ label, onAdd }: { label: string; onAdd: () => void }) {
 
 export function SectionEditor({ section }: { section: CvSection }) {
   const resume = useResumeStore((state) => state.activeResume);
+  const hasHydrated = useResumeStore((state) => state.hasHydrated);
   const updateResume = useResumeStore((state) => state.updateResume);
   const saveDraft = useResumeStore((state) => state.saveDraft);
   const label = cvSectionLabels[section];
+
+  if (!hasHydrated) {
+    return (
+      <div className="rounded-md border border-neutral-200 bg-white p-6 text-sm text-neutral-600">
+        Loading {label.toLowerCase()} editor...
+      </div>
+    );
+  }
 
   function clearSection() {
     updateResume((current) => {

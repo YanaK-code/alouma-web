@@ -25,9 +25,18 @@ const sectionDescriptions: Record<(typeof cvSections)[number], string> = {
 
 export function CVBuilderHome() {
   const resume = useResumeStore((state) => state.activeResume);
+  const hasHydrated = useResumeStore((state) => state.hasHydrated);
   const updateResume = useResumeStore((state) => state.updateResume);
   const saveDraft = useResumeStore((state) => state.saveDraft);
   const resetDraft = useResumeStore((state) => state.resetDraft);
+
+  if (!hasHydrated) {
+    return (
+      <div className="rounded-md border border-neutral-200 bg-white p-6 text-sm text-neutral-600">
+        Loading CV builder...
+      </div>
+    );
+  }
 
   return (
     <>

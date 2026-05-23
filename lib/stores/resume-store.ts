@@ -9,7 +9,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { mockResume } from "@/lib/fixtures/mock-resume";
-import type { Resume } from "@/schemas/resume";
+import { resumeSchema, type Resume } from "@/schemas/resume";
 
 type ResumeUpdater = Partial<Resume> | ((resume: Resume) => Resume);
 
@@ -34,38 +34,106 @@ function stamp(resume: Resume): Resume {
   };
 }
 
-function normalizeResume(resume: Resume | undefined): Resume {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function readRecord(value: unknown, key: string) {
+  return isRecord(value) ? value[key] : undefined;
+}
+
+function readString(value: unknown, fallback: string) {
+  return typeof value === "string" ? value : fallback;
+}
+
+function readArray<T>(value: unknown, fallback: T[]) {
+  return Array.isArray(value) ? value : fallback;
+}
+
+function readSectionNotes(value: unknown) {
+  if (!isRecord(value)) {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(value).filter((entry): entry is [string, string] => typeof entry[1] === "string"),
+  );
+}
+
+function candidateResume(resume: unknown, useMockContent: boolean): Resume {
+  const source = isRecord(resume) ? resume : {};
+  const meta = readRecord(source, "meta");
+  const basics = readRecord(source, "basics");
+  const jobMatch = readRecord(source, "jobMatch");
+
   return {
     ...mockResume,
-    ...resume,
+    ...source,
     meta: {
       ...mockResume.meta,
-      ...resume?.meta,
-      sectionNotes: {
-        ...mockResume.meta.sectionNotes,
-        ...resume?.meta?.sectionNotes,
-      },
+      ...(isRecord(meta) ? meta : {}),
+      sectionNotes: readSectionNotes(readRecord(meta, "sectionNotes")),
     },
     basics: {
       ...mockResume.basics,
-      ...resume?.basics,
+      ...(isRecord(basics) ? basics : {}),
+      fullName: readString(readRecord(basics, "fullName"), useMockContent ? mockResume.basics.fullName : ""),
+      headline: readString(readRecord(basics, "headline"), useMockContent ? mockResume.basics.headline : ""),
+      email: readString(readRecord(basics, "email"), useMockContent ? mockResume.basics.email : ""),
+      phone: readString(readRecord(basics, "phone"), useMockContent ? mockResume.basics.phone : ""),
+      location: readString(readRecord(basics, "location"), useMockContent ? mockResume.basics.location : ""),
+      website: readString(readRecord(basics, "website"), useMockContent ? mockResume.basics.website : ""),
+      linkedin: readString(readRecord(basics, "linkedin"), useMockContent ? (mockResume.basics.linkedin ?? "") : ""),
     },
-    experience: resume?.experience ?? mockResume.experience,
-    education: resume?.education ?? mockResume.education,
-    skills: resume?.skills ?? mockResume.skills,
-    programsTools: resume?.programsTools ?? mockResume.programsTools,
-    languages: resume?.languages ?? mockResume.languages,
-    projects: resume?.projects ?? mockResume.projects,
-    courses: resume?.courses ?? mockResume.courses,
-    licenses: resume?.licenses ?? mockResume.licenses,
-    awards: resume?.awards ?? mockResume.awards,
-    volunteer: resume?.volunteer ?? mockResume.volunteer,
-    interests: resume?.interests ?? mockResume.interests,
+    summary: readString(readRecord(source, "summary"), useMockContent ? mockResume.summary : ""),
+    experience: readArray(readRecord(source, "experience"), useMockContent ? mockResume.experience : []),
+    education: readArray(readRecord(source, "education"), useMockContent ? mockResume.education : []),
+    skills: readArray(readRecord(source, "skills"), useMockContent ? mockResume.skills : []),
+    programsTools: readArray(readRecord(source, "programsTools"), useMockContent ? mockResume.programsTools : []),
+    languages: readArray(readRecord(source, "languages"), useMockContent ? mockResume.languages : []),
+    projects: readArray(readRecord(source, "projects"), useMockContent ? mockResume.projects : []),
+    courses: readArray(readRecord(source, "courses"), useMockContent ? mockResume.courses : []),
+    licenses: readArray(readRecord(source, "licenses"), useMockContent ? mockResume.licenses : []),
+    awards: readArray(readRecord(source, "awards"), useMockContent ? mockResume.awards : []),
+    volunteer: readArray(readRecord(source, "volunteer"), useMockContent ? mockResume.volunteer : []),
+    interests: readArray(readRecord(source, "interests"), useMockContent ? mockResume.interests : []),
     jobMatch: {
       ...mockResume.jobMatch,
-      ...resume?.jobMatch,
+      ...(isRecord(jobMatch) ? jobMatch : {}),
     },
+    template: readString(readRecord(source, "template"), mockResume.template),
+    accentColor: readString(readRecord(source, "accentColor"), mockResume.accentColor),
+    structuredPrimaryAccentColor: readString(
+      readRecord(source, "structuredPrimaryAccentColor"),
+      mockResume.structuredPrimaryAccentColor ?? "",
+    ),
+    structuredSecondaryAccentColor: readString(
+      readRecord(source, "structuredSecondaryAccentColor"),
+      mockResume.structuredSecondaryAccentColor ?? "",
+    ),
   };
+}
+
+function normalizeResume(resume: unknown, useMockContent = false): Resume {
+  const parsed = resumeSchema.safeParse(candidateResume(resume, useMockContent));
+
+  if (parsed.success) {
+    return parsed.data;
+  }
+
+  console.error("[ResumeStore] Invalid resume data; using safe defaults.", parsed.error);
+  return resumeSchema.parse(candidateResume(undefined, useMockContent));
+}
+
+function safeCommitResume(current: Resume, nextResume: Resume) {
+  const parsed = resumeSchema.safeParse(nextResume);
+
+  if (!parsed.success) {
+    console.error("[ResumeStore] Ignored invalid resume update.", parsed.error);
+    return current;
+  }
+
+  return stamp(parsed.data);
 }
 
 function upsertDraft(drafts: Resume[], resume: Resume) {
@@ -97,7 +165,7 @@ export const useResumeStore = create<ResumeState>()(
               : { ...state.activeResume, ...update };
 
           return {
-            activeResume: stamp(nextResume),
+            activeResume: safeCommitResume(state.activeResume, nextResume),
           };
         }),
       saveDraft: () =>
@@ -107,7 +175,7 @@ export const useResumeStore = create<ResumeState>()(
         })),
       resetDraft: () =>
         set({
-          activeResume: stamp(mockResume),
+          activeResume: stamp(normalizeResume(mockResume, true)),
           savedDrafts: [],
         }),
       setHasHydrated: (value) => set({ hasHydrated: value }),
@@ -125,8 +193,10 @@ export const useResumeStore = create<ResumeState>()(
         return {
           ...current,
           ...persistedState,
-          activeResume: normalizeResume(persistedState?.activeResume),
-          savedDrafts: persistedState?.savedDrafts?.map(normalizeResume) ?? [],
+          activeResume: persistedState?.activeResume
+            ? normalizeResume(persistedState.activeResume)
+            : normalizeResume(mockResume, true),
+          savedDrafts: persistedState?.savedDrafts?.map((draft) => normalizeResume(draft)) ?? [],
         };
       },
       onRehydrateStorage: () => (state) => {

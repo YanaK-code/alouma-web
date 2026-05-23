@@ -23,6 +23,9 @@ function contactItems(resume: CVDraft) {
   return [
     contactLink(resume.basics.email),
     resume.basics.phone ? `<span>${esc(resume.basics.phone)}</span>` : "",
+    resume.basics.linkedin
+      ? `<a href="${escHref(resume.basics.linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a>`
+      : "",
     resume.basics.website
       ? `<a href="${escHref(resume.basics.website)}">${esc(resume.basics.website.replace(/^https?:\/\//, ""))}</a>`
       : "",

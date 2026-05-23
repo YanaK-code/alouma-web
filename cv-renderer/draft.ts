@@ -67,14 +67,10 @@ function compactParagraph(title: string, description: string) {
   return name || body;
 }
 
-function listOrFallback(items: string[], fallback: string | undefined) {
+function listContent(items: string[]) {
   const lines = items.map((item) => item.trim()).filter(Boolean);
 
-  if (lines.length) {
-    return lines.join("\n");
-  }
-
-  return fallback ?? "";
+  return lines.join("\n");
 }
 
 function resolveSectionNotes(resume: Resume) {
@@ -86,28 +82,26 @@ function resolveSectionNotes(resume: Resume) {
     compactLine([license.name, license.issuer, license.date]),
   );
 
-  notes.languages = listOrFallback(
+  notes.languages = listContent(
     resume.languages.map((language) => compactLine([language.name, language.proficiency])),
-    notes.languages,
   );
-  notes.projects = listOrFallback(
+  notes.projects = listContent(
     resume.projects.map((project) => compactParagraph(project.name, project.description)),
-    notes.projects,
   );
-  notes.courses = listOrFallback(
+  // Structured has no standalone licenses block in the audited iOS section order.
+  // Licenses intentionally merge into Training & Courses there; Essential still renders licenses separately.
+  notes.courses = listContent(
     resume.template === "structured"
       ? [...courseLines, ...licenseLines.map((line) => (line ? `License - ${line}` : ""))]
       : courseLines,
-    notes.courses,
   );
-  notes.licenses = listOrFallback(licenseLines, notes.licenses);
-  notes.awards = listOrFallback(
+  notes.licenses = listContent(licenseLines);
+  notes.awards = listContent(
     resume.awards.map((award) =>
       compactLine([award.name, award.issuer, award.date, award.description]),
     ),
-    notes.awards,
   );
-  notes.volunteer = listOrFallback(
+  notes.volunteer = listContent(
     resume.volunteer.map((item) =>
       [
         compactLine([item.role, item.organization, item.location]),
@@ -117,9 +111,8 @@ function resolveSectionNotes(resume: Resume) {
         .filter(Boolean)
         .join("\n"),
     ),
-    notes.volunteer,
   );
-  notes.interests = listOrFallback(resume.interests, notes.interests);
+  notes.interests = listContent(resume.interests);
 
   return notes;
 }
