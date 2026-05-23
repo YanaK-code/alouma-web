@@ -1,0 +1,53 @@
+---
+description: Cursor agent workflow and change discipline
+alwaysApply: true
+---
+
+# Agent workflow rules
+
+Work surgically.
+
+## Before editing
+
+For non-trivial tasks:
+- inspect relevant files first
+- identify exact files to change
+- avoid broad rewrites
+- preserve existing behavior unless the prompt asks for a change
+
+## During editing
+
+- Keep changes scoped to the requested task.
+- Do not redesign UI while fixing logic.
+- Do not implement backend while working on frontend-only tasks.
+- Do not add dependencies unless clearly justified.
+- Do not rename core files or routes without instruction.
+- Avoid speculative cleanup.
+
+## After editing
+
+When implementation changes are made:
+- run `npm run lint`
+- run `npm run build` when the task affects routing, rendering, schemas, or app flow
+- report what changed, what passed, and what remains placeholder
+
+## Documentation
+
+If behavior changes in one of these areas, update or add docs:
+
+- CV rendering
+- preview/export parity
+- migration decisions
+- Supabase/backend architecture
+- onboarding logic
+- template behavior
+
+## Forbidden without explicit instruction
+
+Do not:
+- wire real payments
+- wire real Supabase
+- add analytics/tracking
+- change product positioning
+- replace the renderer architecture
+- introduce external fonts/assets into CV output

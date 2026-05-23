@@ -14,6 +14,7 @@ export const resumeSchema = z.object({
     phone: z.string(),
     location: z.string(),
     website: z.string(),
+    linkedin: z.string().optional(),
   }),
   summary: z.string(),
   experience: z.array(
@@ -56,6 +57,8 @@ export const resumeSchema = z.object({
     }),
   template: z.string(),
   accentColor: z.string(),
+  structuredPrimaryAccentColor: z.string().optional(),
+  structuredSecondaryAccentColor: z.string().optional(),
 });
 
 export type Resume = z.infer<typeof resumeSchema>;

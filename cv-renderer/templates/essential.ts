@@ -1,5 +1,5 @@
-import type { Resume } from "@/schemas/resume";
 import { cvBlock, entry, sectionHeader } from "@/cv-renderer/blocks";
+import type { CVDraft } from "@/cv-renderer/draft";
 import { esc, escHref, escSummary } from "@/cv-renderer/escape";
 import { sharedPaginationCSS } from "@/cv-renderer/pagination.css";
 
@@ -19,7 +19,7 @@ function contactLink(value: string, label = value) {
   return `<a href="${escHref(value)}">${esc(label)}</a>`;
 }
 
-function contactItems(resume: Resume) {
+function contactItems(resume: CVDraft) {
   return [
     contactLink(resume.basics.email),
     resume.basics.phone ? `<span>${esc(resume.basics.phone)}</span>` : "",
@@ -33,7 +33,7 @@ function contactItems(resume: Resume) {
     .join("");
 }
 
-function headerBlock(resume: Resume) {
+function headerBlock(resume: CVDraft) {
   return cvBlock(
     "header",
     `
@@ -46,14 +46,14 @@ function headerBlock(resume: Resume) {
   );
 }
 
-function summaryBlock(resume: Resume) {
+function summaryBlock(resume: CVDraft) {
   return cvBlock(
     "summary",
     `${sectionHeader("Summary")}<p class="novo-summary">${escSummary(resume.summary)}</p>`,
   );
 }
 
-function experienceBlock(resume: Resume) {
+function experienceBlock(resume: CVDraft) {
   return cvBlock(
     "experience",
     `${sectionHeader("Experience")}${resume.experience
@@ -71,7 +71,7 @@ function experienceBlock(resume: Resume) {
   );
 }
 
-function educationBlock(resume: Resume) {
+function educationBlock(resume: CVDraft) {
   return cvBlock(
     "education",
     `${sectionHeader("Education")}${resume.education
@@ -97,15 +97,15 @@ function chipBlock(dataBlock: string, title: string, items: string[]) {
   );
 }
 
-function noteBlock(resume: Resume, dataBlock: string, title: string) {
-  const note = resume.meta.sectionNotes[dataBlock] ?? "";
+function noteBlock(resume: CVDraft, dataBlock: string, title: string) {
+  const note = resume.sectionNotes[dataBlock] ?? "";
   return cvBlock(
     dataBlock,
     `${sectionHeader(title)}<p class="novo-summary">${escSummary(note)}</p>`,
   );
 }
 
-export function renderEssential(resume: Resume, accentColorHex: string) {
+export function renderEssential(resume: CVDraft, accentColorHex: string) {
   const blocks = [
     headerBlock(resume),
     summaryBlock(resume),

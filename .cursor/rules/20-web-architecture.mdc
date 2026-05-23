@@ -1,0 +1,62 @@
+---
+description: Alouma Web architecture rules
+alwaysApply: true
+---
+
+# Web architecture rules
+
+Alouma Web uses:
+
+- Next.js App Router
+- TypeScript
+- React components
+- Zustand for temporary local client state
+- Zod schemas for resume/onboarding models
+- Supabase later for auth, sync, entitlements, and AI gateway
+
+## Repo organization
+
+Prefer this structure:
+
+app/
+components/
+features/
+lib/
+schemas/
+cv-renderer/
+docs/
+styles/
+
+Keep feature logic grouped under `features/`.
+Keep reusable primitives under `components/`.
+Keep product/data rules under `lib/` or `schemas/`.
+Keep CV rendering logic under `cv-renderer/`.
+
+## State
+
+Current local state is allowed while backend is mocked.
+
+Do not wire Supabase until explicitly requested.
+
+When state changes are made:
+- keep selectors primitive where possible
+- avoid selectors that return new objects each render unless using shallow comparison correctly
+- preserve hydration guards for persisted Zustand stores
+
+## Routing
+
+Route groups may be used for structure, but URLs should remain clean.
+
+Expected product flow:
+
+login → onboarding → subscribe/paywall → dashboard → cv builder → preview/export
+
+Do not change gating rules unless explicitly requested.
+
+## Data model
+
+Resume data should remain JSON-friendly and compatible with future Supabase `resume_json`.
+
+Prefer schema evolution over ad-hoc object shapes.
+
+Do not normalize resume sections into many backend-style tables in the frontend.

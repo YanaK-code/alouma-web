@@ -1,5 +1,6 @@
 import { CVColorDefaults } from "@/cv-renderer/color-defaults";
 import { cvBridgeJS } from "@/cv-renderer/cv-bridge.js";
+import { toCVDraft } from "@/cv-renderer/draft";
 import { CVPageGeometry } from "@/cv-renderer/geometry";
 import { sharedPaginationJS } from "@/cv-renderer/pagination.js";
 import { resolvedDescriptor } from "@/cv-renderer/template-registry";
@@ -17,11 +18,12 @@ export function buildHtml(resume: Resume) {
 }
 
 function generateThrowing(resume: Resume) {
-  const descriptor = resolvedDescriptor(resume.template);
+  const draft = toCVDraft(resume);
+  const descriptor = resolvedDescriptor(draft.template);
   const body =
     descriptor.rendererKey === "structured"
-      ? renderStructured(resume)
-      : renderEssential(resume, resume.accentColor || CVColorDefaults.essentialAccentHex);
+      ? renderStructured(draft)
+      : renderEssential(draft, draft.accentColorHex);
 
   return completeDocument(body);
 }
@@ -45,13 +47,12 @@ function completeDocument(body: string) {
 }
 
 function minimalFallbackHTML(resume: Resume) {
+  const draft = toCVDraft({
+    ...resume,
+    template: "novo_classic",
+  });
+
   return completeDocument(
-    renderEssential(
-      {
-        ...resume,
-        template: "novo_classic",
-      },
-      CVColorDefaults.essentialAccentHex,
-    ),
+    renderEssential(draft, CVColorDefaults.essentialAccentHex),
   );
 }

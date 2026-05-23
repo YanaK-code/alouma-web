@@ -1,0 +1,66 @@
+---
+description: Alouma Web design direction
+alwaysApply: true
+---
+
+# Alouma Web design direction
+
+Alouma should feel calm, premium, editorial, and practical.
+
+## Visual tone
+
+Use:
+- restrained surfaces
+- strong typography
+- clear hierarchy
+- generous but controlled spacing
+- neutral base palette
+- mustard accent carefully
+- subtle motion only when useful
+
+Avoid:
+- generic SaaS gradients
+- heavy glassmorphism
+- noisy cards everywhere
+- childish mascot overuse
+- fake trust badges
+- aggressive sales language
+
+## Brand palette direction
+
+Core direction:
+- Jet / near-black
+- Silver / cool neutral
+- Mustard accent
+
+Use a 60/30/10 mindset:
+- 60% neutral surfaces/background
+- 30% text/structure/depth
+- 10% accent
+
+## UX principles
+
+- Make the next step obvious.
+- Keep copy human and recruiter-grounded.
+- Do not overexplain.
+- Avoid AI-fluff.
+- Preserve a calm guided flow.
+- Empty states should be useful, not decorative.
+
+## Layout
+
+Desktop web can adapt from iOS but should not feel like a stretched phone screen.
+
+Good web patterns:
+- sidebar or split-pane for app shell
+- larger preview canvas
+- editor + preview side-by-side later
+- clean route-level pages
+- readable forms
+
+## CV preview
+
+The CV itself is not a decorative component.
+
+Do not apply app-card styling inside the CV document.
+The CV document must remain print-stable and recruiter-readable.

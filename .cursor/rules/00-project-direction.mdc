@@ -1,0 +1,28 @@
+---
+description: Alouma Web product direction and migration principles
+alwaysApply: true
+---
+
+# Alouma Web direction
+
+Alouma Web is the browser version of the existing Alouma iOS CV builder.
+
+The goal is not to invent a new product. The goal is to port the existing product logic, rendering philosophy, and recruiter-grade CV output into a web-first implementation.
+
+## Product principles
+
+- Alouma helps users build a clear, recruiter-readable CV through guided structure.
+- The product must feel calm, premium, editorial, and practical.
+- Output quality matters more than visual novelty.
+- The exported CV/PDF is the source of truth for user trust.
+- Users should stay in control. AI suggestions are previews, never automatic overwrites.
+- Avoid generic AI resume-builder language and generic SaaS patterns.
+
+## Migration principles
+
+- Preserve proven iOS product decisions unless explicitly asked to change them.
+- Port product logic before inventing new features.
+- Keep the web repo clean and modular.
+- Treat migration docs in `docs/migration/` as authoritative context.
+- Do not assume iOS docs are current if the code/audit says otherwise.
+- Do not rewrite the iOS app from this repo.

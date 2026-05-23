@@ -1,0 +1,92 @@
+---
+description: CV rendering, preview, export, and template parity rules
+alwaysApply: true
+---
+
+# CV rendering parity rules
+
+The CV renderer is the product moat. Do not improvise it.
+
+## Source of truth
+
+Read these documents before changing renderer logic:
+
+- `docs/migration/ios-cv-rendering-audit.md`
+- `docs/migration/web-migration-audit.md`
+
+The iOS rendering architecture is the reference. Web should host the same rendering philosophy in the browser.
+
+## Non-negotiable DOM contract
+
+Generated CV HTML must preserve:
+
+#pages → .page → .page-content → .cv-block[data-block]
+
+Do not rename these selectors unless explicitly requested.
+
+## Geometry
+
+Preserve the A4 assumptions:
+
+- CSS page size: `794px × 1123px`
+- PDF paper target: `595pt × 842pt`
+- Layout is authored in CSS pixels using the 96dpi → 72pt mapping.
+- Do not introduce adaptive page sizes for CV output.
+
+## Preview/export philosophy
+
+- One HTML producer should feed preview and export.
+- Do not create a separate export-only layout.
+- Preview and export must share DOM, CSS, pagination rules, and geometry.
+- Exported PDF quality is more important than convenience.
+
+## Pagination
+
+Do not simplify pagination logic.
+
+Preserve as closely as possible:
+
+- `sharedPaginationCSS`
+- `sharedPaginationJS`
+- `.cv-block` break avoidance
+- `.novo-entry` splitting behavior
+- education/courses/awards whole-block movement
+- experience/volunteer continuation header behavior
+- header orphan heuristic
+- multi-page A4 flow
+
+If pagination is changed, document the reason in `docs/migration/`.
+
+## Templates
+
+Structured and Essential are real templates.
+
+Structured priority:
+- preserve two-column float layout
+- preserve main/support section placement
+- preserve interleaving algorithm
+- preserve typography scale
+- preserve Jet/Mustard accent behavior
+- preserve light-only print-stable output
+
+Essential priority:
+- preserve single-column layout
+- preserve `sectionOrder`
+- preserve accent bridge behavior
+- preserve dark-mode support only if explicitly ported
+
+## Fonts/assets
+
+- Do not rely on remote fonts.
+- No Google Fonts in renderer.
+- Use deterministic local/system font stacks unless explicitly asked otherwise.
+
+## Anti-patterns
+
+Do not:
+- create a generic resume template
+- replace renderer with React components
+- split preview/export into divergent implementations
+- “modernize” CV layout without instruction
+- change A4 geometry casually
+- add remote assets to CV output

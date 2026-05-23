@@ -1,0 +1,60 @@
+---
+description: Security, Supabase, backend, and AI gateway rules
+alwaysApply: true
+---
+
+# Security and backend rules
+
+Supabase is planned but should not be wired until explicitly requested.
+
+## Future backend direction
+
+Alouma backend model:
+
+- Supabase Auth
+- Postgres with RLS
+- `profiles`
+- `onboarding`
+- `resumes`
+- `ai_usage_daily`
+- `entitlements`
+- `analytics_events`
+- Edge Functions as AI gateway
+- RevenueCat/App Store entitlement mirror later
+
+## Client-safe keys only
+
+Never commit:
+
+- service role keys
+- database passwords
+- OpenAI/API provider keys
+- RevenueCat secrets
+- webhook secrets
+- private tokens
+
+Only public/publishable Supabase anon keys may live in client env, and only after backend wiring is requested.
+
+## AI rules
+
+AI suggestions must be:
+- user-approved
+- previewed before applying
+- never automatic overwrites
+- routed through backend/Edge Functions later
+- not stored as raw prompts/responses unless explicitly designed and disclosed
+
+Do not call LLM providers directly from the browser.
+
+## Data rules
+
+Do not store exported PDFs in Supabase for v1 unless explicitly requested.
+
+Resume data should map to `resume_json`.
+Onboarding should map to `onboarding_json`.
+
+## Privacy
+
+Do not add analytics/tracking scripts without explicit instruction.
+Do not add cookies or third-party scripts casually.
+Do not create privacy claims in UI that are not implemented.

@@ -1,5 +1,5 @@
-import type { Resume } from "@/schemas/resume";
 import { cvBlock, entry, sectionHeader } from "@/cv-renderer/blocks";
+import type { CVDraft } from "@/cv-renderer/draft";
 import { esc, escHref, escSummary } from "@/cv-renderer/escape";
 import { sharedPaginationCSS } from "@/cv-renderer/pagination.css";
 
@@ -21,18 +21,45 @@ function contactItem(inner: string) {
   return `<span class="structured-contact-item">${inner}</span>`;
 }
 
-function headerBlock(resume: Resume) {
-  const portfolio = resume.basics.website.trim()
-    ? `<a href="${escHref(resume.basics.website)}" target="_blank" rel="noopener noreferrer">Portfolio</a>`
+function hexToRgba(hex: string, alpha: number) {
+  let normalized = hex.replace("#", "").trim();
+
+  if (normalized.length === 3) {
+    normalized = normalized
+      .split("")
+      .map((value) => value + value)
+      .join("");
+  }
+
+  const value = Number.parseInt(normalized, 16);
+
+  if (Number.isNaN(value)) {
+    return `rgba(36, 34, 27, ${alpha})`;
+  }
+
+  const red = (value >> 16) & 255;
+  const green = (value >> 8) & 255;
+  const blue = value & 255;
+
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
+function headerBlock(draft: CVDraft) {
+  const linkedin = draft.basics.linkedin.trim()
+    ? `<a href="${escHref(draft.basics.linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a>`
+    : "";
+  const portfolio = draft.basics.website.trim()
+    ? `<a href="${escHref(draft.basics.website)}" target="_blank" rel="noopener noreferrer">Portfolio</a>`
     : "";
 
   const contacts = [
-    resume.basics.email
-      ? `<a href="${escHref(resume.basics.email)}" target="_blank" rel="noopener noreferrer">${esc(resume.basics.email)}</a>`
+    draft.basics.email
+      ? `<a href="${escHref(draft.basics.email)}" target="_blank" rel="noopener noreferrer">${esc(draft.basics.email)}</a>`
       : "",
-    resume.basics.phone ? `<span>${esc(resume.basics.phone)}</span>` : "",
+    draft.basics.phone ? `<span>${esc(draft.basics.phone)}</span>` : "",
+    linkedin,
     portfolio,
-    resume.basics.location ? `<span>${esc(resume.basics.location)}</span>` : "",
+    draft.basics.location ? `<span>${esc(draft.basics.location)}</span>` : "",
   ]
     .map(contactItem)
     .join("");
@@ -42,38 +69,130 @@ function headerBlock(resume: Resume) {
     "full",
     `
       <header class="structured-header">
-        <h1 class="structured-name">${esc(resume.basics.fullName)}</h1>
-        <div class="structured-headline">${esc(resume.basics.headline)}</div>
+        <h1 class="structured-name">${esc(draft.basics.fullName)}</h1>
+        <div class="structured-headline">${esc(draft.basics.headline)}</div>
         <div class="structured-contact">${contacts}</div>
       </header>
     `,
   );
 }
 
-function narrativeBlock(dataBlock: string, title: string, value: string, placement: Placement) {
-  return structuredBlock(
-    dataBlock,
-    placement,
-    `${sectionHeader(title)}<p class="structured-narrative">${escSummary(value)}</p>`,
-  );
+function splitContentLines(value: string) {
+  return value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
 }
 
-function experienceBlock(resume: Resume) {
+function isBulletFormatted(value: string) {
+  const lines = splitContentLines(value);
+
+  return lines.length > 0 && lines.every((line) => /^\s*(?:[-*•–—]|\d+[.)])\s+/.test(line));
+}
+
+function stripBulletPrefix(value: string) {
+  return value.replace(/^\s*(?:[-*•–—]|\d+[.)])\s+/, "");
+}
+
+function bulletList(items: string[], className = "structured-bullets") {
+  if (!items.length) {
+    return "";
+  }
+
+  return `<ul class="${className}">${items.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>`;
+}
+
+function narrativeHTML(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  if (isBulletFormatted(trimmed)) {
+    return bulletList(splitContentLines(trimmed).map(stripBulletPrefix));
+  }
+
+  return `<p class="structured-narrative">${escSummary(trimmed)}</p>`;
+}
+
+function noteHTML(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  if (isBulletFormatted(trimmed)) {
+    return bulletList(splitContentLines(trimmed).map(stripBulletPrefix), "structured-list");
+  }
+
+  const lines = splitContentLines(trimmed);
+
+  if (lines.length > 1) {
+    return `<ul class="structured-list">${lines.map((line) => `<li>${esc(line)}</li>`).join("")}</ul>`;
+  }
+
+  return `<p class="structured-side-text">${escSummary(trimmed)}</p>`;
+}
+
+function narrativeBlock(dataBlock: string, title: string, value: string, placement: Placement) {
+  const body = narrativeHTML(value);
+
+  if (!body) {
+    return "";
+  }
+
+  return structuredBlock(dataBlock, placement, `${sectionHeader(title)}${body}`);
+}
+
+function sideNoteBlock(draft: CVDraft, dataBlock: string, title: string) {
+  const body = noteHTML(draft.sectionNotes[dataBlock] ?? "");
+
+  if (!body) {
+    return "";
+  }
+
+  return structuredBlock(dataBlock, "side", `${sectionHeader(title)}${body}`);
+}
+
+function mainNoteBlock(draft: CVDraft, dataBlock: string, title: string) {
+  return narrativeBlock(dataBlock, title, draft.sectionNotes[dataBlock] ?? "", "main");
+}
+
+function dateRange(startDate: string, endDate: string) {
+  const start = startDate.trim();
+  const end = endDate.trim();
+
+  if (start && end) {
+    return `${start} - ${end}`;
+  }
+
+  return start || end;
+}
+
+function detailLine(parts: string[]) {
+  return parts.filter((part) => part.trim()).map(esc).join(" · ");
+}
+
+function experienceBlock(draft: CVDraft) {
+  if (!draft.experience.length) {
+    return "";
+  }
+
   return structuredBlock(
     "experience",
     "main",
-    `${sectionHeader("Experience")}${resume.experience
+    `${sectionHeader("Experience")}${draft.experience
       .map((item) =>
         entry(
           `
             <div class="structured-entry-topline">
               <h3>${esc(item.role)}</h3>
-              <span>${esc(item.startDate)} - ${esc(item.endDate)}</span>
+              <span>${esc(dateRange(item.startDate, item.endDate))}</span>
             </div>
-            <div class="structured-entry-subtitle">${esc(item.company)} · ${esc(item.location)}</div>
-            <ul class="structured-bullets">${item.bullets
-              .map((bullet) => `<li>${esc(bullet)}</li>`)
-              .join("")}</ul>
+            <div class="structured-entry-subtitle">${detailLine([item.company, item.location])}</div>
+            ${bulletList(item.bullets)}
           `,
           "structured-experience-entry",
         ),
@@ -82,56 +201,54 @@ function experienceBlock(resume: Resume) {
   );
 }
 
-function educationBlock(resume: Resume) {
+function educationBlock(draft: CVDraft) {
+  if (!draft.education.length) {
+    return "";
+  }
+
   return structuredBlock(
     "education",
     "main",
-    `${sectionHeader("Education")}${resume.education
+    `${sectionHeader("Education")}${draft.education
       .map((item) =>
         entry(`
           <div class="structured-entry-topline">
             <h3>${esc(item.degree)}</h3>
-            <span>${esc(item.startDate)} - ${esc(item.endDate)}</span>
+            <span>${esc(dateRange(item.startDate, item.endDate))}</span>
           </div>
-          <div class="structured-entry-subtitle">${esc(item.school)} · ${esc(item.location)}</div>
+          <div class="structured-entry-subtitle">${detailLine([item.school, item.location])}</div>
         `),
       )
       .join("")}`,
   );
 }
 
-function skillsBlock(resume: Resume) {
+function skillsBlock(draft: CVDraft) {
+  if (!draft.skills.length) {
+    return "";
+  }
+
   return structuredBlock(
     "skills",
     "side",
-    `${sectionHeader("Skills")}<div class="structured-skills">${resume.skills
+    `${sectionHeader("Skills")}<div class="structured-skills">${draft.skills
       .map((skill) => `<span>${esc(skill)}</span>`)
       .join("")}</div>`,
   );
 }
 
-function toolsBlock(resume: Resume) {
+function toolsBlock(draft: CVDraft) {
+  if (!draft.programsTools.length) {
+    return "";
+  }
+
   return structuredBlock(
     "programsTools",
     "side",
-    `${sectionHeader("Programs & Tools")}<ul class="structured-list">${resume.programsTools
+    `${sectionHeader("Programs & Tools")}<ul class="structured-list">${draft.programsTools
       .map((tool) => `<li>${esc(tool)}</li>`)
       .join("")}</ul>`,
   );
-}
-
-function sideNoteBlock(resume: Resume, dataBlock: string, title: string) {
-  const note = resume.meta.sectionNotes[dataBlock] ?? "";
-  return structuredBlock(
-    dataBlock,
-    "side",
-    `${sectionHeader(title)}<p class="structured-side-text">${escSummary(note)}</p>`,
-  );
-}
-
-function mainNoteBlock(resume: Resume, dataBlock: string, title: string) {
-  const note = resume.meta.sectionNotes[dataBlock] ?? "";
-  return narrativeBlock(dataBlock, title, note, "main");
 }
 
 function estimatedHeight(html: string) {
@@ -178,33 +295,33 @@ function interleaveStructuredBlocks(mainBlocks: string[], sideBlocks: string[]) 
   return output.join("");
 }
 
-export function renderStructured(resume: Resume) {
+export function renderStructured(draft: CVDraft) {
   const mainBlocks = [
-    narrativeBlock("summary", "Summary", resume.summary, "main"),
-    experienceBlock(resume),
-    educationBlock(resume),
-    mainNoteBlock(resume, "projects", "Projects"),
-    mainNoteBlock(resume, "volunteer", "Volunteering"),
-  ];
+    narrativeBlock("summary", "Summary", draft.summary, "main"),
+    experienceBlock(draft),
+    educationBlock(draft),
+    mainNoteBlock(draft, "projects", "Projects"),
+    mainNoteBlock(draft, "volunteer", "Volunteering"),
+  ].filter(Boolean);
   const sideBlocks = [
-    skillsBlock(resume),
-    sideNoteBlock(resume, "awards", "Key Achievements"),
-    sideNoteBlock(resume, "courses", "Training & Courses"),
-    sideNoteBlock(resume, "interests", "Interests"),
-    toolsBlock(resume),
-    sideNoteBlock(resume, "languages", "Languages"),
-  ];
-  const content = `${headerBlock(resume)}${interleaveStructuredBlocks(mainBlocks, sideBlocks)}`;
+    skillsBlock(draft),
+    sideNoteBlock(draft, "awards", "Key Achievements"),
+    sideNoteBlock(draft, "courses", "Training & Courses"),
+    sideNoteBlock(draft, "interests", "Interests"),
+    toolsBlock(draft),
+    sideNoteBlock(draft, "languages", "Languages"),
+  ].filter(Boolean);
+  const content = `${headerBlock(draft)}${interleaveStructuredBlocks(mainBlocks, sideBlocks)}`;
 
   return `
     <style>
       ${sharedPaginationCSS}
       :root {
         color-scheme: light;
-        --structured-primary-accent: #24221B;
-        --structured-secondary-accent: #F2D04E;
+        --structured-primary-accent: ${draft.structuredPrimaryAccentColorHex};
+        --structured-secondary-accent: ${draft.structuredSecondaryAccentColorHex};
         --accent: var(--structured-primary-accent);
-        --accent-weak: rgba(36, 34, 27, 0.25);
+        --accent-weak: ${hexToRgba(draft.structuredPrimaryAccentColorHex, 0.25)};
         --structured-text: #3F4146;
         --structured-muted: #70747A;
         --structured-rule: #B9BBBE;
