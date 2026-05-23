@@ -32,7 +32,7 @@ export function CVBuilderHome() {
 
   if (!hasHydrated) {
     return (
-      <div className="rounded-md border border-neutral-200 bg-white p-6 text-sm text-neutral-600">
+      <div className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)] shadow-[var(--alouma-shadow-soft)]">
         Loading CV builder...
       </div>
     );
@@ -58,12 +58,14 @@ export function CVBuilderHome() {
         <div className="grid gap-3 md:grid-cols-2">
           {cvSections.map((section) => (
             <Link
-              className="rounded-md border border-neutral-200 bg-white p-4 hover:bg-neutral-50"
+              className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-5 shadow-[var(--alouma-shadow-soft)] transition duration-150 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_22px_46px_rgba(32,29,24,0.1)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]"
               href={`/cv/${section}`}
               key={section}
             >
-              <h2 className="font-semibold">{cvSectionLabels[section]}</h2>
-              <p className="mt-2 text-sm text-neutral-600">
+              <h2 className="font-semibold text-[var(--alouma-jet)]">
+                {cvSectionLabels[section]}
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--alouma-muted)]">
                 {sectionDescriptions[section]}
               </p>
             </Link>
@@ -73,10 +75,10 @@ export function CVBuilderHome() {
           <h2 className="text-lg font-semibold">Draft Status</h2>
           <dl className="mt-4 grid gap-3 text-sm">
             <div>
-              <dt className="font-medium">Template</dt>
+              <dt className="font-semibold text-[var(--alouma-ink)]">Template</dt>
               <dd className="mt-1">
                 <select
-                  className="h-9 w-full rounded-md border border-neutral-300 bg-white px-2 text-sm"
+                  className="min-h-11 w-full rounded-xl border border-[var(--alouma-hairline-strong)] bg-white px-3 text-sm text-[var(--alouma-jet)] outline-none transition focus:border-[var(--alouma-mustard)] focus:ring-4 focus:ring-[var(--alouma-focus)]"
                   onChange={(event) => updateResume({ template: event.target.value })}
                   value={resume.template === "structured" ? "structured" : "novo_classic"}
                 >
@@ -86,12 +88,14 @@ export function CVBuilderHome() {
               </dd>
             </div>
             <div>
-              <dt className="font-medium">Accent</dt>
-              <dd className="text-neutral-600">{resume.accentColor}</dd>
+              <dt className="font-semibold text-[var(--alouma-ink)]">Accent</dt>
+              <dd className="text-[var(--alouma-muted)]">{resume.accentColor}</dd>
             </div>
             <div>
-              <dt className="font-medium">Updated</dt>
-              <dd className="text-neutral-600">{new Date(resume.meta.updatedAt).toLocaleString()}</dd>
+              <dt className="font-semibold text-[var(--alouma-ink)]">Updated</dt>
+              <dd className="text-[var(--alouma-muted)]">
+                {new Date(resume.meta.updatedAt).toLocaleString()}
+              </dd>
             </div>
           </dl>
           <ButtonLink className="mt-6 w-full" href="/cv/preview" variant="secondary">

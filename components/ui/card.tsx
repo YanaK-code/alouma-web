@@ -9,7 +9,12 @@ export function Card({
   className?: string;
 }) {
   return (
-    <section className={cn("rounded-md border border-neutral-200 bg-white p-5", className)}>
+    <section
+      className={cn(
+        "rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 shadow-[var(--alouma-shadow-soft)]",
+        className,
+      )}
+    >
       {children}
     </section>
   );

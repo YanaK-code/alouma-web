@@ -2,34 +2,45 @@
 
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import type { OnboardingStep } from "@/lib/router/routes";
+
+const LOCAL_ONBOARDING_KEYS = [
+  "alouma_web_onboarding_profile",
+  "alouma_web_onboarding_complete",
+  "alouma_web_strategy_input",
+  "alouma_web_target_industry_id",
+] as const;
+
+function clearLocalOnboardingPersistence() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  for (const key of LOCAL_ONBOARDING_KEYS) {
+    window.localStorage.removeItem(key);
+  }
+}
 
 /**
- * Temporary local prototype funnel flags only — not authentication, not entitlements,
- * not subscription state. Production must use server session, middleware, RLS, and
- * sanitized access DTOs from the backend.
+ * Temporary local placeholder funnel flags only — not authentication, not onboarding truth,
+ * not entitlements, and not subscription state. Production must use server session,
+ * middleware, RLS, and sanitized access DTOs from the backend.
  */
 type AppState = {
-  mockAuthCompleted: boolean;
-  mockOnboardingCompleted: boolean;
-  mockPaywallCompleted: boolean;
-  mockIntroCompleted: boolean;
-  onboardingAnswers: Partial<Record<OnboardingStep, string>>;
+  authPlaceholderComplete: boolean;
+  onboardingPlaceholderComplete: boolean;
+  paywallPlaceholderComplete: boolean;
   hasHydrated: boolean;
-  completeMockAuthFlow: () => void;
-  setOnboardingAnswer: (step: OnboardingStep, answer: string) => void;
-  completeMockOnboardingFlow: () => void;
-  completeMockPaywallStep: () => void;
-  resetAppFlow: () => void;
+  completeAuthPlaceholder: () => void;
+  completeOnboardingPlaceholder: () => void;
+  completePaywallPlaceholder: () => void;
+  resetPlaceholderFlow: () => void;
   setHasHydrated: (value: boolean) => void;
 };
 
 const initialFlags = {
-  mockAuthCompleted: false,
-  mockOnboardingCompleted: false,
-  mockPaywallCompleted: false,
-  mockIntroCompleted: false,
-  onboardingAnswers: {},
+  authPlaceholderComplete: false,
+  onboardingPlaceholderComplete: false,
+  paywallPlaceholderComplete: false,
 };
 
 export const useAppStore = create<AppState>()(
@@ -37,42 +48,37 @@ export const useAppStore = create<AppState>()(
     (set) => ({
       ...initialFlags,
       hasHydrated: false,
-      completeMockAuthFlow: () =>
+      completeAuthPlaceholder: () =>
         set({
-          mockAuthCompleted: true,
-          mockIntroCompleted: true,
+          authPlaceholderComplete: true,
+          onboardingPlaceholderComplete: false,
+          paywallPlaceholderComplete: false,
         }),
-      setOnboardingAnswer: (step, answer) =>
-        set((state) => ({
-          onboardingAnswers: {
-            ...state.onboardingAnswers,
-            [step]: answer,
-          },
-        })),
-      completeMockOnboardingFlow: () =>
+      completeOnboardingPlaceholder: () =>
         set({
-          mockOnboardingCompleted: true,
+          onboardingPlaceholderComplete: true,
+          paywallPlaceholderComplete: false,
         }),
-      completeMockPaywallStep: () =>
+      completePaywallPlaceholder: () =>
         set({
-          mockPaywallCompleted: true,
+          paywallPlaceholderComplete: true,
         }),
-      resetAppFlow: () =>
+      resetPlaceholderFlow: () => {
+        clearLocalOnboardingPersistence();
         set({
           ...initialFlags,
-        }),
+        });
+      },
       setHasHydrated: (value) => set({ hasHydrated: value }),
     }),
     {
-      // v1 key: avoids rehydrating legacy client-trusted subscription/auth fields.
-      name: "alouma-app-prototype-flow-v1",
+      // Local/dev placeholder UX state only. This must not become auth or entitlement truth.
+      name: "alouma-web-entry-placeholder-flow-v1",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
-        mockAuthCompleted: state.mockAuthCompleted,
-        mockOnboardingCompleted: state.mockOnboardingCompleted,
-        mockPaywallCompleted: state.mockPaywallCompleted,
-        mockIntroCompleted: state.mockIntroCompleted,
-        onboardingAnswers: state.onboardingAnswers,
+        authPlaceholderComplete: state.authPlaceholderComplete,
+        onboardingPlaceholderComplete: state.onboardingPlaceholderComplete,
+        paywallPlaceholderComplete: state.paywallPlaceholderComplete,
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);

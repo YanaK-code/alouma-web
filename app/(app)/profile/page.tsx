@@ -9,19 +9,19 @@ export default function ProfilePage() {
         title="Profile"
       />
       <Card className="max-w-2xl">
-        <h2 className="text-lg font-semibold">Mock Profile</h2>
+        <h2 className="text-lg font-semibold text-[var(--alouma-jet)]">Mock Profile</h2>
         <dl className="mt-4 grid gap-3 text-sm">
           <div>
-            <dt className="font-medium">Name</dt>
-            <dd className="text-neutral-600">Alex Morgan</dd>
+            <dt className="font-semibold">Name</dt>
+            <dd className="text-[var(--alouma-muted)]">Alex Morgan</dd>
           </div>
           <div>
-            <dt className="font-medium">Email</dt>
-            <dd className="text-neutral-600">alex@example.com</dd>
+            <dt className="font-semibold">Email</dt>
+            <dd className="text-[var(--alouma-muted)]">alex@example.com</dd>
           </div>
           <div>
-            <dt className="font-medium">Prototype paywall step</dt>
-            <dd className="text-neutral-600">Not connected (placeholder)</dd>
+            <dt className="font-semibold">Placeholder paywall step</dt>
+            <dd className="text-[var(--alouma-muted)]">Not connected (placeholder)</dd>
           </div>
         </dl>
       </Card>

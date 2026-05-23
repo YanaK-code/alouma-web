@@ -1,15 +1,15 @@
 export const onboardingSteps = [
-  "intro",
+  "careerStage",
   "goal",
-  "role",
-  "experience-level",
-  "work-history",
-  "education",
-  "skills",
-  "job-target",
-  "template",
-  "review",
-  "complete",
+  "revelation1",
+  "sector",
+  "cvChallenge",
+  "revelation2",
+  "atsConcern",
+  "revelationATS",
+  "applicationConcern",
+  "activelyApplying",
+  "revelationFinal",
 ] as const;
 
 export type OnboardingStep = (typeof onboardingSteps)[number];

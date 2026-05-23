@@ -1,5 +1,5 @@
-import { PaywallPlaceholder } from "@/features/onboarding/paywall-placeholder";
+import { redirect } from "next/navigation";
 
 export default function SubscribePage() {
-  return <PaywallPlaceholder />;
+  redirect("/paywall");
 }

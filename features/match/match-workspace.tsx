@@ -53,7 +53,7 @@ export function MatchWorkspace() {
 
   if (!hasHydrated) {
     return (
-      <div className="rounded-md border border-neutral-200 bg-white p-6 text-sm text-neutral-600">
+      <div className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)] shadow-[var(--alouma-shadow-soft)]">
         Loading match workspace...
       </div>
     );
@@ -107,25 +107,25 @@ export function MatchWorkspace() {
             Generate Match
           </Button>
           {jobDescription.trim().length === 0 ? (
-            <p className="mt-2 text-xs text-neutral-500">
+            <p className="mt-2 text-xs text-[var(--alouma-muted-soft)]">
               Paste a job description to enable this deterministic placeholder.
             </p>
           ) : null}
         </Card>
         <Card>
-          <h2 className="text-lg font-semibold">Mock Result</h2>
+          <h2 className="text-lg font-semibold text-[var(--alouma-jet)]">Mock Result</h2>
           {result ? (
             <div className="mt-4 grid gap-3 text-sm">
-              <p>
-                <span className="font-medium">Match score:</span> {result.score}%
+              <p className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] p-4">
+                <span className="font-semibold">Match score:</span> {result.score}%
               </p>
               <p>
-                <span className="font-medium">Strengths:</span>{" "}
+                <span className="font-semibold">Strengths:</span>{" "}
                 {result.strengths.join(", ")}
               </p>
               <div>
-                <p className="font-medium">Gaps</p>
-                <ul className="mt-2 list-disc pl-5 text-neutral-600">
+                <p className="font-semibold">Gaps</p>
+                <ul className="mt-2 list-disc pl-5 text-[var(--alouma-muted)]">
                   {result.gaps.map((gap) => (
                     <li key={gap}>{gap}</li>
                   ))}
@@ -133,7 +133,7 @@ export function MatchWorkspace() {
               </div>
             </div>
           ) : (
-            <p className="mt-4 text-sm text-neutral-600">
+            <p className="mt-4 rounded-2xl border border-dashed border-[var(--alouma-hairline-strong)] bg-[var(--alouma-canvas)] p-4 text-sm leading-6 text-[var(--alouma-muted)]">
               Generate a match to see a deterministic placeholder result.
             </p>
           )}

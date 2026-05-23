@@ -17,7 +17,7 @@ export default function SavedPage() {
 
   if (!hasHydrated) {
     return (
-      <div className="rounded-md border border-neutral-200 bg-white p-6 text-sm text-neutral-600">
+      <div className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)] shadow-[var(--alouma-shadow-soft)]">
         Loading saved CVs...
       </div>
     );
@@ -38,12 +38,14 @@ export default function SavedPage() {
       <div className="grid gap-4">
         {savedDrafts.length === 0 ? (
           <Card className="max-w-2xl">
-            <h2 className="text-lg font-semibold">No saved drafts yet</h2>
-            <p className="mt-2 text-sm text-neutral-600">
+            <h2 className="text-lg font-semibold text-[var(--alouma-jet)]">
+              No saved drafts yet
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-[var(--alouma-muted)]">
               Your active local draft is available in the builder. Save it here to create a
               restorable browser draft.
             </p>
-            <p className="mt-2 text-sm text-neutral-600">
+            <p className="mt-3 rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] p-4 text-sm leading-6 text-[var(--alouma-muted)]">
               Active draft: {activeResume.basics.fullName || "Untitled candidate"} · Updated{" "}
               {new Date(activeResume.meta.updatedAt).toLocaleString()}
             </p>
@@ -62,12 +64,14 @@ export default function SavedPage() {
         ) : null}
         {savedDrafts.map((draft) => (
           <Card className="max-w-2xl" key={draft.meta.id}>
-            <h2 className="text-lg font-semibold">{draft.meta.title}</h2>
-            <p className="mt-2 text-sm text-neutral-600">
+            <h2 className="text-lg font-semibold text-[var(--alouma-jet)]">
+              {draft.meta.title}
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-[var(--alouma-muted)]">
               {draft.basics.fullName || "Untitled candidate"} · Updated{" "}
               {new Date(draft.meta.updatedAt).toLocaleString()}
             </p>
-            <p className="mt-2 text-sm text-neutral-600">
+            <p className="mt-2 text-sm leading-6 text-[var(--alouma-muted)]">
               Saved in local browser storage. Loading a draft replaces the active builder draft.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">

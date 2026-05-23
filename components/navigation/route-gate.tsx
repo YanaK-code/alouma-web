@@ -8,8 +8,12 @@ import { useAppStore } from "@/lib/stores/app-store";
 type GateArea = "auth" | "funnel" | "app";
 
 function isAllowed(area: GateArea, pathname: string, nextRoute: string) {
+  if (pathname === nextRoute) {
+    return true;
+  }
+
   if (area === "auth") {
-    return nextRoute === "/login" || pathname === nextRoute;
+    return pathname === "/login";
   }
 
   if (area === "funnel") {
@@ -20,7 +24,7 @@ function isAllowed(area: GateArea, pathname: string, nextRoute: string) {
 }
 
 /**
- * Temporary client-side prototype funnel redirect only — not authentication,
+ * Temporary client-side placeholder funnel redirect only — not authentication,
  * not subscription enforcement, not production route protection.
  * TODO: Add Next.js middleware + server session (e.g. Supabase Auth) for real access control.
  */
@@ -34,15 +38,19 @@ export function RouteGate({
   const pathname = usePathname();
   const router = useRouter();
   const hasHydrated = useAppStore((state) => state.hasHydrated);
-  const mockAuthCompleted = useAppStore((state) => state.mockAuthCompleted);
-  const mockOnboardingCompleted = useAppStore(
-    (state) => state.mockOnboardingCompleted,
+  const authPlaceholderComplete = useAppStore(
+    (state) => state.authPlaceholderComplete,
   );
-  const mockPaywallCompleted = useAppStore((state) => state.mockPaywallCompleted);
+  const onboardingPlaceholderComplete = useAppStore(
+    (state) => state.onboardingPlaceholderComplete,
+  );
+  const paywallPlaceholderComplete = useAppStore(
+    (state) => state.paywallPlaceholderComplete,
+  );
   const nextRoute = resolveNextRoute({
-    mockAuthCompleted,
-    mockOnboardingCompleted,
-    mockPaywallCompleted,
+    authPlaceholderComplete,
+    onboardingPlaceholderComplete,
+    paywallPlaceholderComplete,
   });
 
   useEffect(() => {
@@ -51,20 +59,33 @@ export function RouteGate({
     }
 
     router.replace(nextRoute);
-  }, [area, hasHydrated, mockAuthCompleted, mockOnboardingCompleted, mockPaywallCompleted, nextRoute, pathname, router]);
+  }, [
+    area,
+    hasHydrated,
+    authPlaceholderComplete,
+    onboardingPlaceholderComplete,
+    paywallPlaceholderComplete,
+    nextRoute,
+    pathname,
+    router,
+  ]);
 
   if (!hasHydrated) {
     return (
-      <main className="flex min-h-screen items-center justify-center p-8">
-        <p className="text-sm text-neutral-600">Loading prototype flow...</p>
+      <main className="flex min-h-screen items-center justify-center bg-[var(--alouma-canvas)] p-8">
+        <p className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] px-5 py-4 text-sm text-[var(--alouma-muted)] shadow-[var(--alouma-shadow-soft)]">
+          Loading placeholder flow...
+        </p>
       </main>
     );
   }
 
   if (!isAllowed(area, pathname, nextRoute)) {
     return (
-      <main className="flex min-h-screen items-center justify-center p-8">
-        <p className="text-sm text-neutral-600">Redirecting...</p>
+      <main className="flex min-h-screen items-center justify-center bg-[var(--alouma-canvas)] p-8">
+        <p className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] px-5 py-4 text-sm text-[var(--alouma-muted)] shadow-[var(--alouma-shadow-soft)]">
+          Redirecting...
+        </p>
       </main>
     );
   }
