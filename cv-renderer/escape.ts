@@ -1,3 +1,6 @@
+const BLOCKED_HREF_PROTOCOL = /^(javascript|data|vbscript|file|blob):/i;
+const ALLOWED_HREF_PROTOCOL = /^(https?|mailto|tel):/i;
+
 export function esc(value: string) {
   return escapeEntities(value).replaceAll("\n", "<br/>");
 }
@@ -11,13 +14,17 @@ export function escHref(value: string) {
 }
 
 export function normalizeURLForHref(value: string) {
-  const trimmed = value.trim();
+  const trimmed = stripUnsafeHrefInput(value);
 
   if (!trimmed) {
     return "";
   }
 
-  if (/^(https?:|mailto:|tel:)/i.test(trimmed)) {
+  if (BLOCKED_HREF_PROTOCOL.test(trimmed)) {
+    return "#";
+  }
+
+  if (ALLOWED_HREF_PROTOCOL.test(trimmed)) {
     return trimmed;
   }
 
@@ -26,6 +33,12 @@ export function normalizeURLForHref(value: string) {
   }
 
   return `https://${trimmed}`;
+}
+
+function stripUnsafeHrefInput(value: string) {
+  return value
+    .trim()
+    .replace(/[\u0000-\u001F\u007F]/g, "");
 }
 
 function escapeEntities(value: string) {

@@ -1,0 +1,70 @@
+---
+description: Browser-untrusted security, RLS, entitlements, server-only data, AI gateway
+alwaysApply: true
+---
+
+# Web security (mandatory)
+
+Read [SECURITY.md](../../SECURITY.md) and [docs/security/web-security-rules.md](../../docs/security/web-security-rules.md) before auth, billing, Supabase, API routes, server actions, AI, or env changes.
+
+## Browser is untrusted
+
+Never treat client state, storage, bundles, network responses, or `NEXT_PUBLIC_*` as authoritative for identity, subscription, verification, entitlements, AI limits, admin, deletion, or ownership.
+
+## Secrets
+
+- Never put secrets in client code or `NEXT_PUBLIC_*`.
+- Never commit service role keys, DB passwords, RevenueCat/OpenAI/webhook secrets, admin tokens.
+- Allowed public env only: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_APP_ENV`.
+
+## No raw backend truth in the client
+
+Do not add or return raw fields like `isVerified`, `hasActiveSubscription`, `isAdmin`, `entitlementStatus`, `subscriptionExpiresAt`, `revenueCatCustomerId`, AI limit counters, `deletedAt`, raw entitlement/billing rows.
+
+Use sanitized display DTOs (e.g. `canUseAi`, `canExportPdf`, `planLabel`) for UI only. Re-check access server-side on every protected action.
+
+## Data access pattern (Next.js)
+
+```
+Client → Server Action/API/Server Component → server-only module (import 'server-only') → Supabase/Edge → sanitized DTO → client
+```
+
+Forbidden: Client Component → privileged query → raw row → client decides access.
+
+No `"use client"` file may import server-only env/config/data modules.
+
+## Supabase
+
+- Wire Supabase only when explicitly requested.
+- Every user-owned table: RLS on before production; policies use `auth.uid()` (e.g. `user_id = auth.uid()` or `id = auth.uid()` for profiles).
+- Never rely on client-side filtering as security.
+
+## Entitlements and AI
+
+- Subscription truth: App Store/RevenueCat → webhook → Supabase mirror → server/Edge → optional sanitized DTO.
+- Hiding UI is not protection; gate AI, export, premium features on the server at action time.
+- No LLM calls from the browser; keys server-only; suggestions only, user-approved, no auto-overwrite of CV.
+- Do not log raw prompts, responses, or full CV/job text by default.
+
+## API / ownership / XSS
+
+- Auth + authorize + Zod validate + prove ownership; minimal responses; no mutation via GET; CSRF if cookie auth.
+- Never trust `resumeId` / `jobId` / `userId` from URL or body without server ownership proof.
+- User content untrusted: text by default; no `dangerouslySetInnerHTML` without strict sanitization; validate URLs.
+
+## CV data
+
+- `resume_json` sensitive; full JSON only where needed (builder/export/scoped AI). Not in dashboards, analytics, or logs.
+- No exported PDF storage in Supabase v1 unless requested.
+
+## Privacy and deps
+
+- No analytics/tracking/cookies/third-party scripts without explicit instruction and documentation (CSP, privacy).
+- No privacy claims in UI that are not implemented.
+- Before new deps: client exposure, telemetry, CSP impact, necessity.
+
+## PRs touching auth/data/AI/billing/env
+
+Confirm: no client secrets; no raw rows to client; RLS; server-side ownership and entitlement checks; validated inputs; no GET mutations; redacted logs; documented third parties.
+
+When `50-security-backend.mdc` and this file differ on security posture, follow this file and SECURITY.md.

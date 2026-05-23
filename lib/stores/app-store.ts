@@ -4,29 +4,31 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { OnboardingStep } from "@/lib/router/routes";
 
+/**
+ * Temporary local prototype funnel flags only — not authentication, not entitlements,
+ * not subscription state. Production must use server session, middleware, RLS, and
+ * sanitized access DTOs from the backend.
+ */
 type AppState = {
-  isLoggedIn: boolean;
-  hasCompletedOnboarding: boolean;
-  hasActiveSubscription: boolean;
-  hasDismissedPaywall: boolean;
-  hasSeenIntro: boolean;
+  mockAuthCompleted: boolean;
+  mockOnboardingCompleted: boolean;
+  mockPaywallCompleted: boolean;
+  mockIntroCompleted: boolean;
   onboardingAnswers: Partial<Record<OnboardingStep, string>>;
   hasHydrated: boolean;
-  continueAsMockUser: () => void;
+  completeMockAuthFlow: () => void;
   setOnboardingAnswer: (step: OnboardingStep, answer: string) => void;
-  completeOnboarding: () => void;
-  startTrial: () => void;
-  dismissPaywall: () => void;
+  completeMockOnboardingFlow: () => void;
+  completeMockPaywallStep: () => void;
   resetAppFlow: () => void;
   setHasHydrated: (value: boolean) => void;
 };
 
 const initialFlags = {
-  isLoggedIn: false,
-  hasCompletedOnboarding: false,
-  hasActiveSubscription: false,
-  hasDismissedPaywall: false,
-  hasSeenIntro: false,
+  mockAuthCompleted: false,
+  mockOnboardingCompleted: false,
+  mockPaywallCompleted: false,
+  mockIntroCompleted: false,
   onboardingAnswers: {},
 };
 
@@ -35,10 +37,10 @@ export const useAppStore = create<AppState>()(
     (set) => ({
       ...initialFlags,
       hasHydrated: false,
-      continueAsMockUser: () =>
+      completeMockAuthFlow: () =>
         set({
-          isLoggedIn: true,
-          hasSeenIntro: true,
+          mockAuthCompleted: true,
+          mockIntroCompleted: true,
         }),
       setOnboardingAnswer: (step, answer) =>
         set((state) => ({
@@ -47,18 +49,13 @@ export const useAppStore = create<AppState>()(
             [step]: answer,
           },
         })),
-      completeOnboarding: () =>
+      completeMockOnboardingFlow: () =>
         set({
-          hasCompletedOnboarding: true,
+          mockOnboardingCompleted: true,
         }),
-      startTrial: () =>
+      completeMockPaywallStep: () =>
         set({
-          hasActiveSubscription: true,
-          hasDismissedPaywall: true,
-        }),
-      dismissPaywall: () =>
-        set({
-          hasDismissedPaywall: true,
+          mockPaywallCompleted: true,
         }),
       resetAppFlow: () =>
         set({
@@ -67,14 +64,14 @@ export const useAppStore = create<AppState>()(
       setHasHydrated: (value) => set({ hasHydrated: value }),
     }),
     {
-      name: "alouma-app-state",
+      // v1 key: avoids rehydrating legacy client-trusted subscription/auth fields.
+      name: "alouma-app-prototype-flow-v1",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
-        isLoggedIn: state.isLoggedIn,
-        hasCompletedOnboarding: state.hasCompletedOnboarding,
-        hasActiveSubscription: state.hasActiveSubscription,
-        hasDismissedPaywall: state.hasDismissedPaywall,
-        hasSeenIntro: state.hasSeenIntro,
+        mockAuthCompleted: state.mockAuthCompleted,
+        mockOnboardingCompleted: state.mockOnboardingCompleted,
+        mockPaywallCompleted: state.mockPaywallCompleted,
+        mockIntroCompleted: state.mockIntroCompleted,
         onboardingAnswers: state.onboardingAnswers,
       }),
       onRehydrateStorage: () => (state) => {

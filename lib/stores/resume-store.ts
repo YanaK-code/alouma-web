@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * Prototype-only: full resume/CV and job-match text in localStorage is sensitive.
+ * Production must use server-owned resume_json, RLS, and minimal per-route DTOs — not
+ * client-authoritative persistence of complete CV payloads.
+ */
+
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { mockResume } from "@/lib/fixtures/mock-resume";
@@ -44,10 +50,17 @@ function normalizeResume(resume: Resume | undefined): Resume {
       ...mockResume.basics,
       ...resume?.basics,
     },
-    experience: resume?.experience?.length ? resume.experience : mockResume.experience,
-    education: resume?.education?.length ? resume.education : mockResume.education,
+    experience: resume?.experience ?? mockResume.experience,
+    education: resume?.education ?? mockResume.education,
     skills: resume?.skills ?? mockResume.skills,
     programsTools: resume?.programsTools ?? mockResume.programsTools,
+    languages: resume?.languages ?? mockResume.languages,
+    projects: resume?.projects ?? mockResume.projects,
+    courses: resume?.courses ?? mockResume.courses,
+    licenses: resume?.licenses ?? mockResume.licenses,
+    awards: resume?.awards ?? mockResume.awards,
+    volunteer: resume?.volunteer ?? mockResume.volunteer,
+    interests: resume?.interests ?? mockResume.interests,
     jobMatch: {
       ...mockResume.jobMatch,
       ...resume?.jobMatch,

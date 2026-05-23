@@ -20,8 +20,8 @@ export default function ProfilePage() {
             <dd className="text-neutral-600">alex@example.com</dd>
           </div>
           <div>
-            <dt className="font-medium">Plan</dt>
-            <dd className="text-neutral-600">Mock local entitlement</dd>
+            <dt className="font-medium">Prototype paywall step</dt>
+            <dd className="text-neutral-600">Not connected (placeholder)</dd>
           </div>
         </dl>
       </Card>

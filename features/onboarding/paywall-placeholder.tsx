@@ -5,18 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useAppStore } from "@/lib/stores/app-store";
 
+/**
+ * Prototype paywall step — not payment, not trial activation, not entitlements.
+ * TODO: App Store / RevenueCat → webhook → Supabase entitlement mirror → server-side access DTO.
+ */
 export function PaywallPlaceholder() {
   const router = useRouter();
-  const startTrial = useAppStore((state) => state.startTrial);
-  const dismissPaywall = useAppStore((state) => state.dismissPaywall);
+  const completeMockPaywallStep = useAppStore((state) => state.completeMockPaywallStep);
 
-  function handleStartTrial() {
-    startTrial();
-    router.replace("/dashboard");
-  }
-
-  function handleNotNow() {
-    dismissPaywall();
+  function handleContinue() {
+    completeMockPaywallStep();
     router.replace("/dashboard");
   }
 
@@ -26,12 +24,13 @@ export function PaywallPlaceholder() {
         <p className="text-sm font-medium text-neutral-500">Paywall placeholder</p>
         <h1 className="mt-2 text-2xl font-semibold">Subscribe to Alouma</h1>
         <p className="mt-3 text-sm text-neutral-600">
-          Payment, trial, and entitlement checks are intentionally mocked in this pass.
+          UI placeholder only. Buttons mark the prototype paywall step complete — not payment,
+          not a trial, and not subscription or entitlement state.
         </p>
         <div className="mt-6 grid gap-3">
-          <Button onClick={handleStartTrial}>Start Trial</Button>
-          <Button onClick={handleNotNow} variant="secondary">
-            Not Now
+          <Button onClick={handleContinue}>Continue (prototype)</Button>
+          <Button onClick={handleContinue} variant="secondary">
+            Skip for now (prototype)
           </Button>
         </div>
       </Card>

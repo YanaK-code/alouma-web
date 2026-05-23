@@ -7,6 +7,22 @@ import { Card } from "@/components/ui/card";
 import { cvSections, cvSectionLabels } from "@/lib/router/routes";
 import { useResumeStore } from "@/lib/stores/resume-store";
 
+const sectionDescriptions: Record<(typeof cvSections)[number], string> = {
+  basics: "Name, headline, contact links, and location.",
+  summary: "A short professional summary for the top of the CV.",
+  experience: "Work history with roles, companies, dates, and bullets.",
+  education: "Schools, degrees, locations, and dates.",
+  skills: "Skill chips shown in the CV side column.",
+  "programs-tools": "Software, systems, and tools.",
+  languages: "Languages and proficiency levels.",
+  projects: "Selected project names and descriptions.",
+  courses: "Courses, certificates, bootcamps, and dates.",
+  licenses: "Professional licenses and issuing bodies.",
+  awards: "Awards, honors, recognitions, and details.",
+  volunteer: "Volunteer roles, organizations, dates, and bullets.",
+  interests: "Personal interests that support the target role.",
+};
+
 export function CVBuilderHome() {
   const resume = useResumeStore((state) => state.activeResume);
   const updateResume = useResumeStore((state) => state.updateResume);
@@ -39,7 +55,7 @@ export function CVBuilderHome() {
             >
               <h2 className="font-semibold">{cvSectionLabels[section]}</h2>
               <p className="mt-2 text-sm text-neutral-600">
-                Placeholder editor for the iOS {cvSectionLabels[section]} section.
+                {sectionDescriptions[section]}
               </p>
             </Link>
           ))}

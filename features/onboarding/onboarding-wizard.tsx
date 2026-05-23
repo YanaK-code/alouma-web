@@ -13,7 +13,9 @@ export function OnboardingWizard() {
   const router = useRouter();
   const answers = useAppStore((state) => state.onboardingAnswers);
   const setAnswer = useAppStore((state) => state.setOnboardingAnswer);
-  const completeOnboarding = useAppStore((state) => state.completeOnboarding);
+  const completeMockOnboardingFlow = useAppStore(
+    (state) => state.completeMockOnboardingFlow,
+  );
   const [stepIndex, setStepIndex] = useState(0);
   const step = onboardingSteps[stepIndex];
   const progress = useMemo(
@@ -27,7 +29,7 @@ export function OnboardingWizard() {
       return;
     }
 
-    completeOnboarding();
+    completeMockOnboardingFlow();
     router.replace("/subscribe");
   }
 

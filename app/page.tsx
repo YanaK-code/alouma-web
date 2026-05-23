@@ -8,16 +8,11 @@ import { resolveNextRoute } from "@/lib/router/resolve-next-route";
 export default function LaunchPage() {
   const router = useRouter();
   const hasHydrated = useAppStore((state) => state.hasHydrated);
-  const isLoggedIn = useAppStore((state) => state.isLoggedIn);
-  const hasCompletedOnboarding = useAppStore(
-    (state) => state.hasCompletedOnboarding,
+  const mockAuthCompleted = useAppStore((state) => state.mockAuthCompleted);
+  const mockOnboardingCompleted = useAppStore(
+    (state) => state.mockOnboardingCompleted,
   );
-  const hasActiveSubscription = useAppStore(
-    (state) => state.hasActiveSubscription,
-  );
-  const hasDismissedPaywall = useAppStore(
-    (state) => state.hasDismissedPaywall,
-  );
+  const mockPaywallCompleted = useAppStore((state) => state.mockPaywallCompleted);
 
   useEffect(() => {
     if (!hasHydrated) {
@@ -26,18 +21,16 @@ export default function LaunchPage() {
 
     router.replace(
       resolveNextRoute({
-        isLoggedIn,
-        hasCompletedOnboarding,
-        hasActiveSubscription,
-        hasDismissedPaywall,
+        mockAuthCompleted,
+        mockOnboardingCompleted,
+        mockPaywallCompleted,
       }),
     );
   }, [
-    hasActiveSubscription,
-    hasCompletedOnboarding,
-    hasDismissedPaywall,
     hasHydrated,
-    isLoggedIn,
+    mockAuthCompleted,
+    mockOnboardingCompleted,
+    mockPaywallCompleted,
     router,
   ]);
 

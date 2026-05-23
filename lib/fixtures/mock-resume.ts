@@ -112,6 +112,57 @@ export const mockResume: Resume = {
     "Knowledge management",
   ],
   programsTools: ["Notion", "Airtable", "Google Sheets", "Slack", "Asana", "Zendesk", "Looker Studio"],
+  languages: [
+    { id: "lang_1", name: "English", proficiency: "Native" },
+    { id: "lang_2", name: "Spanish", proficiency: "Professional working proficiency" },
+    { id: "lang_3", name: "French", proficiency: "Conversational" },
+  ],
+  projects: [
+    {
+      id: "project_1",
+      name: "Customer handoff journey map",
+      description:
+        "Mapped the customer handoff journey across sales, onboarding, and support, then built a shared intake tracker that reduced duplicate requests.",
+    },
+    {
+      id: "project_2",
+      name: "Service launch checklist",
+      description:
+        "Created a lightweight launch checklist for new service packages, aligning owners, dependencies, and follow-up rituals before rollout.",
+    },
+  ],
+  courses: [
+    { id: "course_1", name: "Google Project Management Certificate", provider: "Google", date: "2023" },
+    { id: "course_2", name: "Advanced Airtable Automation Workshop", provider: "Airtable", date: "2024" },
+    { id: "course_3", name: "Data Storytelling for Operations Teams", provider: "General Assembly", date: "2024" },
+  ],
+  licenses: [
+    { id: "license_1", name: "Lean Six Sigma Yellow Belt", issuer: "GoLeanSixSigma", date: "2022" },
+  ],
+  awards: [
+    {
+      id: "award_1",
+      name: "Operations Excellence Award",
+      issuer: "Northstar Studio",
+      date: "2024",
+      description: "Recognized for improving cross-functional planning and renewal readiness.",
+    },
+  ],
+  volunteer: [
+    {
+      id: "vol_1",
+      role: "Volunteer Operations Lead",
+      organization: "Career Pathways Collective",
+      location: "New York, NY",
+      startDate: "2021",
+      endDate: "Present",
+      bullets: [
+        "Coordinate mentor matching, workshop calendars, and post-event feedback loops for early-career job seekers.",
+        "Maintain simple tracking systems for volunteer availability and participant follow-up.",
+      ],
+    },
+  ],
+  interests: ["Urban planning", "Career mobility programs", "Community mentoring"],
   jobMatch: {
     jobDescription: "",
     result: null,

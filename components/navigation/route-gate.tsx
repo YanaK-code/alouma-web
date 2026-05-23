@@ -19,6 +19,11 @@ function isAllowed(area: GateArea, pathname: string, nextRoute: string) {
   return nextRoute === "/dashboard";
 }
 
+/**
+ * Temporary client-side prototype funnel redirect only — not authentication,
+ * not subscription enforcement, not production route protection.
+ * TODO: Add Next.js middleware + server session (e.g. Supabase Auth) for real access control.
+ */
 export function RouteGate({
   area,
   children,
@@ -29,21 +34,15 @@ export function RouteGate({
   const pathname = usePathname();
   const router = useRouter();
   const hasHydrated = useAppStore((state) => state.hasHydrated);
-  const isLoggedIn = useAppStore((state) => state.isLoggedIn);
-  const hasCompletedOnboarding = useAppStore(
-    (state) => state.hasCompletedOnboarding,
+  const mockAuthCompleted = useAppStore((state) => state.mockAuthCompleted);
+  const mockOnboardingCompleted = useAppStore(
+    (state) => state.mockOnboardingCompleted,
   );
-  const hasActiveSubscription = useAppStore(
-    (state) => state.hasActiveSubscription,
-  );
-  const hasDismissedPaywall = useAppStore(
-    (state) => state.hasDismissedPaywall,
-  );
+  const mockPaywallCompleted = useAppStore((state) => state.mockPaywallCompleted);
   const nextRoute = resolveNextRoute({
-    isLoggedIn,
-    hasCompletedOnboarding,
-    hasActiveSubscription,
-    hasDismissedPaywall,
+    mockAuthCompleted,
+    mockOnboardingCompleted,
+    mockPaywallCompleted,
   });
 
   useEffect(() => {
@@ -52,12 +51,12 @@ export function RouteGate({
     }
 
     router.replace(nextRoute);
-  }, [area, hasHydrated, nextRoute, pathname, router]);
+  }, [area, hasHydrated, mockAuthCompleted, mockOnboardingCompleted, mockPaywallCompleted, nextRoute, pathname, router]);
 
   if (!hasHydrated) {
     return (
       <main className="flex min-h-screen items-center justify-center p-8">
-        <p className="text-sm text-neutral-600">Loading app state...</p>
+        <p className="text-sm text-neutral-600">Loading prototype flow...</p>
       </main>
     );
   }

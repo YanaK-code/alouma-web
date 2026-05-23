@@ -5,6 +5,8 @@ alwaysApply: true
 
 # Security and backend rules
 
+For full browser-untrusted rules, see [SECURITY.md](../../SECURITY.md), [docs/security/web-security-rules.md](../../docs/security/web-security-rules.md), and `.cursor/rules/web-security.mdc`.
+
 Supabase is planned but should not be wired until explicitly requested.
 
 ## Future backend direction

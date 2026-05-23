@@ -40,6 +40,69 @@ export const resumeSchema = z.object({
   ),
   skills: z.array(z.string()),
   programsTools: z.array(z.string()).default([]),
+  languages: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        proficiency: z.string(),
+      }),
+    )
+    .default([]),
+  projects: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        description: z.string(),
+      }),
+    )
+    .default([]),
+  courses: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        provider: z.string(),
+        date: z.string(),
+      }),
+    )
+    .default([]),
+  licenses: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        issuer: z.string(),
+        date: z.string(),
+      }),
+    )
+    .default([]),
+  awards: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        issuer: z.string(),
+        date: z.string(),
+        description: z.string(),
+      }),
+    )
+    .default([]),
+  volunteer: z
+    .array(
+      z.object({
+        id: z.string(),
+        role: z.string(),
+        organization: z.string(),
+        location: z.string(),
+        startDate: z.string(),
+        endDate: z.string(),
+        bullets: z.array(z.string()),
+      }),
+    )
+    .default([]),
+  interests: z.array(z.string()).default([]),
   jobMatch: z
     .object({
       jobDescription: z.string(),
