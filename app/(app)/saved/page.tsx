@@ -17,7 +17,7 @@ export default function SavedPage() {
 
   if (!hasHydrated) {
     return (
-      <div className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)] shadow-[var(--alouma-shadow-soft)]">
+      <div className="rounded-[16px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)]">
         Loading saved CVs...
       </div>
     );
@@ -45,7 +45,7 @@ export default function SavedPage() {
               Your active local draft is available in the builder. Save it here to create a
               restorable browser draft.
             </p>
-            <p className="mt-3 rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] p-4 text-sm leading-6 text-[var(--alouma-muted)]">
+            <p className="mt-3 rounded-[12px] border border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] p-4 text-sm leading-6 text-[var(--alouma-muted)]">
               Active draft: {activeResume.basics.fullName || "Untitled candidate"} · Updated{" "}
               {new Date(activeResume.meta.updatedAt).toLocaleString()}
             </p>

@@ -32,7 +32,7 @@ export function CVBuilderHome() {
 
   if (!hasHydrated) {
     return (
-      <div className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)] shadow-[var(--alouma-shadow-soft)]">
+      <div className="rounded-[16px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)]">
         Loading CV builder...
       </div>
     );
@@ -58,11 +58,11 @@ export function CVBuilderHome() {
         <div className="grid gap-3 md:grid-cols-2">
           {cvSections.map((section) => (
             <Link
-              className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-5 shadow-[var(--alouma-shadow-soft)] transition duration-150 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_22px_46px_rgba(32,29,24,0.1)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]"
+              className="rounded-[16px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-5 transition-colors duration-150 hover:border-[var(--alouma-hairline-strong)] hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]"
               href={`/cv/${section}`}
               key={section}
             >
-              <h2 className="font-semibold text-[var(--alouma-jet)]">
+              <h2 className="font-semibold tracking-[-0.01em] text-[var(--alouma-jet)]">
                 {cvSectionLabels[section]}
               </h2>
               <p className="mt-2 text-sm leading-6 text-[var(--alouma-muted)]">
@@ -78,7 +78,7 @@ export function CVBuilderHome() {
               <dt className="font-semibold text-[var(--alouma-ink)]">Template</dt>
               <dd className="mt-1">
                 <select
-                  className="min-h-11 w-full rounded-xl border border-[var(--alouma-hairline-strong)] bg-white px-3 text-sm text-[var(--alouma-jet)] outline-none transition focus:border-[var(--alouma-mustard)] focus:ring-4 focus:ring-[var(--alouma-focus)]"
+                  className="min-h-11 w-full rounded-[12px] border border-[var(--alouma-hairline-strong)] bg-white px-3 text-sm text-[var(--alouma-jet)] outline-none transition focus:border-[var(--alouma-jet)] focus:ring-4 focus:ring-[var(--alouma-focus)]"
                   onChange={(event) => updateResume({ template: event.target.value })}
                   value={resume.template === "structured" ? "structured" : "novo_classic"}
                 >

@@ -10,16 +10,12 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <header className="mb-7 flex flex-col gap-4 border-b border-[var(--alouma-hairline)] pb-6 sm:flex-row sm:items-end sm:justify-between">
+    <header className="mb-10 flex flex-col gap-4 border-b border-[var(--alouma-hairline)] pb-8 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--alouma-mustard-strong)]">
-          Alouma
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-normal text-[var(--alouma-jet)]">
-          {title}
-        </h1>
+        <p className="alouma-eyebrow">Alouma</p>
+        <h1 className="alouma-display-section mt-3 text-3xl">{title}</h1>
         {description ? (
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--alouma-muted)]">
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--alouma-muted)]">
             {description}
           </p>
         ) : null}

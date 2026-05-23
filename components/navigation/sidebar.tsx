@@ -19,21 +19,21 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="shrink-0 border-b border-[var(--alouma-hairline)] bg-[rgba(251,250,246,0.92)] px-4 py-4 shadow-[0_12px_28px_rgba(32,29,24,0.05)] backdrop-blur md:sticky md:top-0 md:h-screen md:w-72 md:border-b-0 md:border-r md:p-5">
+    <aside className="shrink-0 border-b border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] px-4 py-4 md:sticky md:top-0 md:h-screen md:w-72 md:border-b-0 md:border-r md:p-6">
       <Link
-        className="mb-4 flex items-center justify-between rounded-xl px-2 py-1.5 text-lg font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)] md:mb-7"
+        className="mb-4 flex items-center justify-between rounded-[8px] px-2 py-1.5 text-lg font-semibold tracking-[-0.01em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)] md:mb-8"
         href="/dashboard"
       >
         <span>Alouma</span>
-        <span className="hidden h-2 w-10 rounded-full bg-[var(--alouma-mustard)] md:block" />
+        <span className="hidden h-1 w-10 rounded-full bg-[var(--alouma-mustard)] md:block" />
       </Link>
       <nav className="flex gap-1 overflow-x-auto pb-1 md:grid md:overflow-visible md:pb-0">
         {primaryLinks.map((link) => (
           <Link
             className={cn(
-              "whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium text-[var(--alouma-muted)] transition hover:bg-[var(--alouma-jet)]/5 hover:text-[var(--alouma-jet)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--alouma-focus)]",
+              "whitespace-nowrap rounded-[8px] px-3 py-2 text-sm font-medium text-[var(--alouma-muted)] transition-colors hover:bg-[var(--alouma-jet)]/5 hover:text-[var(--alouma-jet)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--alouma-focus)]",
               pathname === link.href &&
-                "bg-[var(--alouma-jet)] text-white shadow-[0_12px_24px_rgba(17,17,15,0.12)] hover:bg-[var(--alouma-jet)] hover:text-white",
+                "bg-[var(--alouma-surface-soft)] text-[var(--alouma-jet)] hover:bg-[var(--alouma-surface-soft)]",
             )}
             href={link.href}
             key={link.href}
@@ -42,8 +42,8 @@ export function Sidebar() {
           </Link>
         ))}
       </nav>
-      <div className="mt-7 hidden md:block">
-        <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--alouma-muted-soft)]">
+      <div className="mt-8 hidden md:block">
+        <p className="alouma-eyebrow mb-3 px-3 text-[var(--alouma-muted-soft)]">
           CV Sections
         </p>
         <nav className="grid gap-1">
@@ -53,9 +53,9 @@ export function Sidebar() {
             return (
               <Link
                 className={cn(
-                  "rounded-xl px-3 py-2 text-sm font-medium text-[var(--alouma-muted)] transition hover:bg-[var(--alouma-jet)]/5 hover:text-[var(--alouma-jet)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--alouma-focus)]",
+                  "rounded-[8px] px-3 py-2 text-sm font-medium text-[var(--alouma-muted)] transition-colors hover:bg-[var(--alouma-jet)]/5 hover:text-[var(--alouma-jet)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--alouma-focus)]",
                   pathname === href &&
-                    "bg-white text-[var(--alouma-jet)] shadow-[0_10px_22px_rgba(32,29,24,0.08)]",
+                    "bg-[var(--alouma-surface-soft)] text-[var(--alouma-jet)]",
                 )}
                 href={href}
                 key={section}

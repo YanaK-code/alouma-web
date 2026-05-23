@@ -187,11 +187,12 @@ function SelectableOption({
 }) {
   return (
     <button
+      aria-pressed={selected}
       className={cn(
-        "flex min-h-14 w-full items-center justify-between gap-4 rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]",
+        "flex min-h-14 w-full items-center justify-between gap-4 rounded-[12px] border px-4 py-3 text-left text-sm font-semibold transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]",
         selected
-          ? "border-[var(--alouma-mustard)] bg-[#f5ead0] text-[var(--alouma-jet)] shadow-[0_10px_24px_rgba(91,69,20,0.10)]"
-          : "border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] text-[var(--alouma-ink)] hover:border-[#d6b66b] hover:bg-white",
+          ? "border-[var(--alouma-mustard)] bg-[var(--alouma-mustard-soft)] text-[var(--alouma-jet)]"
+          : "border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] text-[var(--alouma-ink)] hover:border-[var(--alouma-hairline-strong)]",
         disabled ? "cursor-not-allowed opacity-55" : "",
       )}
       disabled={disabled}
@@ -200,15 +201,12 @@ function SelectableOption({
     >
       <span>{option.label}</span>
       <span
+        aria-hidden="true"
         className={cn(
-          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[10px] font-bold uppercase tracking-normal",
-          selected
-            ? "border-[var(--alouma-mustard)] bg-[var(--alouma-mustard)] text-[var(--alouma-jet)]"
-            : "border-[var(--alouma-hairline-strong)] bg-white text-transparent",
+          "h-2 w-2 shrink-0 rounded-full",
+          selected ? "bg-[var(--alouma-mustard-strong)]" : "bg-transparent",
         )}
-      >
-        {selected ? "On" : ""}
-      </span>
+      />
     </button>
   );
 }
@@ -225,11 +223,9 @@ function RoleRefinement({
   }
 
   return (
-    <div className="mt-5 rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface-soft)] p-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--alouma-mustard-strong)]">
-        Refine
-      </p>
-      <div className="mt-3 grid gap-3">
+    <div className="mt-6 rounded-[16px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface-soft)] p-5">
+      <p className="alouma-eyebrow">Refine</p>
+      <div className="mt-4 grid gap-3">
         {profile.sectors.map((sectorId) => {
           const sector = sectorOptions.find((option) => option.id === sectorId);
 
@@ -239,7 +235,7 @@ function RoleRefinement({
                 {sector?.label ?? sectorId}
               </span>
               <input
-                className="min-h-11 rounded-xl border border-[var(--alouma-hairline-strong)] bg-white px-3 text-sm text-[var(--alouma-jet)] outline-none transition focus:border-[var(--alouma-mustard)] focus:ring-4 focus:ring-[var(--alouma-focus)]"
+                className="min-h-11 rounded-[12px] border border-[var(--alouma-hairline-strong)] bg-white px-4 text-sm text-[var(--alouma-jet)] outline-none transition focus:border-[var(--alouma-jet)] focus:ring-4 focus:ring-[var(--alouma-focus)]"
                 onChange={(event) => {
                   const role = event.target.value;
 
@@ -422,22 +418,22 @@ export function OnboardingWizard() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--alouma-canvas)] px-4 py-6 text-[var(--alouma-jet)] sm:px-6 sm:py-10 lg:px-8">
-      <section className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-3xl flex-col sm:min-h-[calc(100vh-5rem)]">
-        <div className="rounded-2xl border border-[var(--alouma-hairline)] bg-[rgba(251,250,246,0.88)] p-4 shadow-[var(--alouma-shadow-soft)] sm:p-5">
+    <main className="min-h-screen bg-[var(--alouma-canvas)] px-4 py-8 text-[var(--alouma-jet)] sm:px-6 sm:py-12 lg:px-8">
+      <section className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-2xl flex-col">
+        <div>
           <div className="flex items-center justify-between gap-4">
-            <p className="text-sm font-semibold text-[var(--alouma-muted)]">
+            <p className="alouma-eyebrow text-[var(--alouma-muted)]">
               Step {stepIndex + 1} of {onboardingSteps.length}
             </p>
             <button
-              className="rounded-sm text-xs font-semibold uppercase tracking-[0.16em] text-[var(--alouma-mustard-strong)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]"
+              className="rounded-[6px] text-xs font-semibold uppercase tracking-[0.16em] text-[var(--alouma-mustard-strong)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]"
               onClick={handleReset}
               type="button"
             >
               Reset local flow
             </button>
           </div>
-          <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#11110f]/10">
+          <div className="mt-4 h-1 overflow-hidden rounded-full bg-[var(--alouma-jet)]/10">
             <div
               className="h-full rounded-full bg-[var(--alouma-mustard)] transition-all duration-200"
               style={{ width: `${progressValue}%` }}
@@ -445,14 +441,12 @@ export function OnboardingWizard() {
           </div>
         </div>
 
-        <div className="flex flex-1 items-center py-8">
+        <div className="flex flex-1 items-start py-10 sm:py-16">
           {isQuestion ? (
             <section className="w-full">
-              <div className="mb-7 text-left">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--alouma-mustard-strong)]">
-                  Alouma onboarding
-                </p>
-                <h1 className="mt-3 text-3xl font-semibold leading-tight tracking-normal sm:text-5xl">
+              <div className="mb-8 text-left">
+                <p className="alouma-eyebrow">Alouma onboarding</p>
+                <h1 className="alouma-display-section mt-3 text-3xl sm:text-4xl">
                   {questionContent[step]?.title}
                 </h1>
                 {questionContent[step]?.subtitle ? (
@@ -487,7 +481,7 @@ export function OnboardingWizard() {
               {step === "sector" ? (
                 <>
                   {sectorLimitMessage ? (
-                    <p className="mt-3 text-sm font-semibold text-[var(--alouma-mustard-strong)]">
+                    <p className="mt-4 text-sm font-semibold text-[var(--alouma-mustard-strong)]">
                       {sectorLimitMessage}
                     </p>
                   ) : null}
@@ -496,54 +490,51 @@ export function OnboardingWizard() {
               ) : null}
             </section>
           ) : (
-            <section className="w-full overflow-hidden rounded-[1.5rem] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-7 shadow-[var(--alouma-shadow-card)] sm:p-10">
-              <div className="mb-7 grid grid-cols-[auto_1fr] items-center gap-4">
-                <div className="grid h-14 w-14 place-items-center rounded-2xl border border-[#c99a2e]/35 bg-[#f5ead0]">
-                  <div className="h-5 w-5 rounded-full bg-[var(--alouma-mustard)]" />
-                </div>
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--alouma-mustard-strong)]">
-                  Personalization
-                </p>
-              </div>
-              <h1 className="text-3xl font-semibold leading-tight tracking-normal sm:text-5xl">
+            <section className="w-full">
+              <p className="alouma-eyebrow">Personalization</p>
+              <h1 className="alouma-display-section mt-3 text-3xl sm:text-4xl">
                 {revelationContent?.title}
               </h1>
-              <p className="mt-5 text-lg leading-8 text-[var(--alouma-muted)]">
+              <p className="mt-5 max-w-xl text-lg leading-8 text-[var(--alouma-muted)]">
                 {revelationContent?.subtitle}
               </p>
-              <div className="mt-8 grid gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface-soft)] p-4">
-                  <div className="h-1.5 w-10 rounded-full bg-[var(--alouma-mustard)]" />
-                  <p className="mt-3 text-sm font-semibold">Fit</p>
-                </div>
-                <div className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface-soft)] p-4">
-                  <div className="h-1.5 w-10 rounded-full bg-[#11110f]/25" />
-                  <p className="mt-3 text-sm font-semibold">Signal</p>
-                </div>
-                <div className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface-soft)] p-4">
-                  <div className="h-1.5 w-10 rounded-full bg-[#11110f]/25" />
-                  <p className="mt-3 text-sm font-semibold">Structure</p>
+              <div className="mt-10 rounded-[24px] border border-[var(--alouma-mustard)] bg-[var(--alouma-mustard-soft)] p-6">
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <div className="h-1 w-10 rounded-full bg-[var(--alouma-mustard-strong)]" />
+                    <p className="mt-3 text-sm font-semibold text-[var(--alouma-jet)]">
+                      Fit
+                    </p>
+                  </div>
+                  <div>
+                    <div className="h-1 w-10 rounded-full bg-[var(--alouma-jet)]/30" />
+                    <p className="mt-3 text-sm font-semibold text-[var(--alouma-jet)]">
+                      Signal
+                    </p>
+                  </div>
+                  <div>
+                    <div className="h-1 w-10 rounded-full bg-[var(--alouma-jet)]/30" />
+                    <p className="mt-3 text-sm font-semibold text-[var(--alouma-jet)]">
+                      Structure
+                    </p>
+                  </div>
                 </div>
               </div>
             </section>
           )}
         </div>
 
-        <div className="sticky bottom-0 -mx-4 border-t border-[var(--alouma-hairline)] bg-[rgba(243,240,234,0.92)] px-4 py-4 backdrop-blur sm:static sm:mx-0 sm:border-t-0 sm:bg-transparent sm:px-0 sm:pt-0">
-          <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
+        <div className="border-t border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] pt-6">
+          <div className="flex items-center justify-between gap-3">
             {stepIndex > 0 ? (
-              <Button
-                className="min-h-12 px-6"
-                onClick={handleBack}
-                variant="secondary"
-              >
+              <Button onClick={handleBack} variant="secondary">
                 Back
               </Button>
             ) : (
               <div />
             )}
             <Button
-              className="min-h-12 px-7"
+              className="px-7"
               disabled={!canContinue}
               onClick={handleContinue}
             >

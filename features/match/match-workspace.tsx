@@ -53,7 +53,7 @@ export function MatchWorkspace() {
 
   if (!hasHydrated) {
     return (
-      <div className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)] shadow-[var(--alouma-shadow-soft)]">
+      <div className="rounded-[16px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)]">
         Loading match workspace...
       </div>
     );
@@ -116,7 +116,7 @@ export function MatchWorkspace() {
           <h2 className="text-lg font-semibold text-[var(--alouma-jet)]">Mock Result</h2>
           {result ? (
             <div className="mt-4 grid gap-3 text-sm">
-              <p className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] p-4">
+              <p className="rounded-[12px] border border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] p-4">
                 <span className="font-semibold">Match score:</span> {result.score}%
               </p>
               <p>
@@ -133,7 +133,7 @@ export function MatchWorkspace() {
               </div>
             </div>
           ) : (
-            <p className="mt-4 rounded-2xl border border-dashed border-[var(--alouma-hairline-strong)] bg-[var(--alouma-canvas)] p-4 text-sm leading-6 text-[var(--alouma-muted)]">
+            <p className="mt-4 rounded-[12px] border border-dashed border-[var(--alouma-hairline-strong)] bg-[var(--alouma-canvas)] p-4 text-sm leading-6 text-[var(--alouma-muted)]">
               Generate a match to see a deterministic placeholder result.
             </p>
           )}

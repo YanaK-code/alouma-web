@@ -37,7 +37,7 @@ export function CVPreviewFrame({ html }: { html: string }) {
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full overflow-auto rounded-md border border-neutral-300 bg-neutral-100 p-4">
+    <div ref={containerRef} className="w-full overflow-auto rounded-[16px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface-soft)] p-4">
       <div
         style={{
           width: CVPageGeometry.webViewportWidthPt * scale,

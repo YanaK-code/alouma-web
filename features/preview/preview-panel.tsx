@@ -10,7 +10,7 @@ export function PreviewPanel() {
 
   if (!hasHydrated) {
     return (
-      <div className="rounded-md border border-neutral-200 bg-white p-6 text-sm text-neutral-600">
+      <div className="rounded-[12px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)]">
         Loading CV preview...
       </div>
     );

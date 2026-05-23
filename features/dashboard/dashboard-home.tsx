@@ -37,26 +37,24 @@ export function DashboardHome() {
         description="Your calm command center for the current CV draft."
         title="Dashboard"
       />
-      <section className="mb-5 rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-jet)] p-6 text-white shadow-[var(--alouma-shadow-soft)]">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--alouma-mustard)]">
-          Active workspace
-        </p>
-        <h2 className="mt-3 max-w-2xl text-2xl font-semibold leading-tight">
+      <section className="mb-6 rounded-[24px] border border-[var(--alouma-mustard)] bg-[var(--alouma-mustard-soft)] p-8">
+        <p className="alouma-eyebrow">Active workspace</p>
+        <h2 className="alouma-display-section mt-3 max-w-2xl text-2xl sm:text-3xl">
           Keep the draft moving, then preview before export.
         </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-white/70">
+        <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--alouma-ink)]">
           The web version mirrors the core flow: write, structure, match, save, and preview.
         </p>
       </section>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {cards.map((card) => (
-          <Card className="grid min-h-48 gap-5 transition duration-150 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_rgba(32,29,24,0.12)]" key={card.href}>
+          <Card className="grid min-h-48 gap-5" key={card.href}>
             <div>
-              <div className="mb-4 h-1.5 w-10 rounded-full bg-[var(--alouma-mustard)]" />
-              <h2 className="text-lg font-semibold text-[var(--alouma-jet)]">
+              <div className="mb-4 h-1 w-10 rounded-full bg-[var(--alouma-mustard)]" />
+              <h2 className="text-lg font-semibold tracking-[-0.01em] text-[var(--alouma-jet)]">
                 {card.title}
               </h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--alouma-muted)]">
+              <p className="mt-3 text-sm leading-6 text-[var(--alouma-muted)]">
                 {card.description}
               </p>
             </div>

@@ -34,53 +34,48 @@ export function PaywallPlaceholder() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--alouma-canvas)] px-4 py-10 text-[var(--alouma-jet)] sm:px-6 lg:px-8">
-      <section className="mx-auto grid max-w-5xl gap-8 rounded-[1.5rem] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-7 shadow-[var(--alouma-shadow-card)] sm:p-10 lg:grid-cols-[0.9fr_1fr]">
+    <main className="min-h-screen bg-[var(--alouma-canvas)] px-4 py-16 text-[var(--alouma-jet)] sm:px-6 lg:px-8">
+      <section className="mx-auto grid max-w-5xl items-stretch gap-8 lg:grid-cols-[5fr_7fr]">
         <div className="flex flex-col justify-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--alouma-mustard-strong)]">
-            Placeholder paywall
-          </p>
-          <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-normal sm:text-5xl">
+          <p className="alouma-eyebrow">Placeholder paywall</p>
+          <h1 className="alouma-display-section mt-4 text-4xl sm:text-5xl">
             Build with clarity first.
           </h1>
           <p className="mt-5 text-base leading-7 text-[var(--alouma-muted)]">
             Premium features will live here later: guided AI suggestions, deeper CV
             review, job tailoring, and cloud sync.
           </p>
-          <p className="mt-5 rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] p-4 text-sm leading-6 text-[var(--alouma-muted)]">
+          <p className="mt-6 rounded-[12px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-4 text-sm leading-6 text-[var(--alouma-muted)]">
             This placeholder does not create a subscription, activate a trial, or grant
             a real entitlement.
           </p>
         </div>
-        <article className="rounded-2xl border border-white/10 bg-[var(--alouma-jet)] p-6 text-white shadow-[0_20px_45px_rgba(32,29,24,0.16)]">
-          <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-5">
+        <article className="rounded-[24px] border border-[var(--alouma-mustard)] bg-[var(--alouma-mustard-soft)] p-8 sm:p-10">
+          <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--alouma-mustard)]/40 pb-6">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#c99a2e]">
-                Alouma Pro
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold">Coming soon</h2>
+              <p className="alouma-eyebrow">Alouma Pro</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.01em] text-[var(--alouma-jet)]">
+                Coming soon
+              </h2>
             </div>
-            <span className="rounded-xl bg-[var(--alouma-mustard)] px-3 py-1 text-xs font-semibold text-[var(--alouma-jet)]">
+            <span className="rounded-full border border-[var(--alouma-jet)] bg-[var(--alouma-jet)] px-3 py-1 text-xs font-semibold text-[var(--alouma-mustard)]">
               Placeholder
             </span>
           </div>
-          <ul className="mt-6 grid gap-3 text-sm leading-6 text-white/75">
+          <ul className="mt-7 grid gap-3 text-sm leading-6 text-[var(--alouma-ink)]">
             {planBullets.map((bullet) => (
               <li className="flex gap-3" key={bullet}>
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#c99a2e]" />
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--alouma-jet)]" />
                 <span>{bullet}</span>
               </li>
             ))}
           </ul>
           <div className="mt-8 grid gap-3 sm:grid-cols-2">
-            <Button
-              className="min-h-12"
-              onClick={handleContinue}
-            >
+            <Button onClick={handleContinue} variant="dark">
               Continue to dashboard
             </Button>
             <Button
-              className="min-h-12 border-white/15 bg-white/10 text-white hover:border-white/25 hover:bg-white/15"
+              className="border-[var(--alouma-jet)] bg-transparent text-[var(--alouma-jet)] hover:bg-[var(--alouma-jet)]/10"
               onClick={handleContinue}
               variant="secondary"
             >
@@ -88,7 +83,7 @@ export function PaywallPlaceholder() {
             </Button>
           </div>
           <button
-            className="mt-6 rounded-sm text-xs font-semibold uppercase tracking-[0.16em] text-[var(--alouma-mustard)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]"
+            className="mt-6 rounded-[6px] text-xs font-semibold uppercase tracking-[0.16em] text-[var(--alouma-mustard-strong)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]"
             onClick={handleReset}
             type="button"
           >

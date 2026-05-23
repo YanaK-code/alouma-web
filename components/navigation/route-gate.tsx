@@ -73,7 +73,7 @@ export function RouteGate({
   if (!hasHydrated) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[var(--alouma-canvas)] p-8">
-        <p className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] px-5 py-4 text-sm text-[var(--alouma-muted)] shadow-[var(--alouma-shadow-soft)]">
+        <p className="rounded-[12px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] px-5 py-4 text-sm text-[var(--alouma-muted)]">
           Loading placeholder flow...
         </p>
       </main>
@@ -83,7 +83,7 @@ export function RouteGate({
   if (!isAllowed(area, pathname, nextRoute)) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[var(--alouma-canvas)] p-8">
-        <p className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] px-5 py-4 text-sm text-[var(--alouma-muted)] shadow-[var(--alouma-shadow-soft)]">
+        <p className="rounded-[12px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] px-5 py-4 text-sm text-[var(--alouma-muted)]">
           Redirecting...
         </p>
       </main>

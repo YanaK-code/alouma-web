@@ -137,7 +137,7 @@ function ItemFrame({
   title: string;
 }) {
   return (
-    <div className="grid gap-4 rounded-2xl border border-[var(--alouma-hairline)] bg-white/70 p-4">
+    <div className="grid gap-4 rounded-[16px] border border-[var(--alouma-hairline)] bg-white p-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold text-[var(--alouma-jet)]">{title}</h2>
         <Button onClick={onRemove} variant="ghost">
@@ -151,7 +151,7 @@ function ItemFrame({
 
 function EmptySection({ label, onAdd }: { label: string; onAdd: () => void }) {
   return (
-    <div className="rounded-2xl border border-dashed border-[var(--alouma-hairline-strong)] bg-[var(--alouma-canvas)] p-5">
+    <div className="rounded-[16px] border border-dashed border-[var(--alouma-hairline-strong)] bg-[var(--alouma-canvas)] p-5">
       <p className="text-sm leading-6 text-[var(--alouma-muted)]">
         No {label.toLowerCase()} added yet.
       </p>
@@ -171,7 +171,7 @@ export function SectionEditor({ section }: { section: CvSection }) {
 
   if (!hasHydrated) {
     return (
-      <div className="rounded-2xl border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)] shadow-[var(--alouma-shadow-soft)]">
+      <div className="rounded-[16px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)]">
         Loading {label.toLowerCase()} editor...
       </div>
     );
