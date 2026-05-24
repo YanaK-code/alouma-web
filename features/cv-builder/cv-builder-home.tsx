@@ -1,42 +1,46 @@
 "use client";
 
 import Link from "next/link";
+import { DesignPanel } from "@/components/design/design-panel";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { cvSections, cvSectionLabels } from "@/lib/router/routes";
+import { PreviewPanel } from "@/features/preview/preview-panel";
+import { cvSectionLabels } from "@/lib/router/routes";
+import {
+  builderSectionDescriptions,
+  builderSections,
+  getMissingReadinessItems,
+  getNextBestAction,
+  getReadinessScore,
+  hasEnoughContentForMatch,
+} from "@/lib/resume/readiness";
 import { useResumeStore } from "@/lib/stores/resume-store";
+import { cn } from "@/lib/utils/cn";
 
-const sectionDescriptions: Record<(typeof cvSections)[number], string> = {
-  basics: "Name, headline, contact links, and location.",
-  summary: "A short professional summary for the top of the CV.",
-  experience: "Work history with roles, companies, dates, and bullets.",
-  education: "Schools, degrees, locations, and dates.",
-  skills: "Skill chips shown in the CV side column.",
-  "programs-tools": "Software, systems, and tools.",
-  languages: "Languages and proficiency levels.",
-  projects: "Selected project names and descriptions.",
-  courses: "Courses, certificates, bootcamps, and dates.",
-  licenses: "Professional licenses and issuing bodies.",
-  awards: "Awards, honors, recognitions, and details.",
-  volunteer: "Volunteer roles, organizations, dates, and bullets.",
-  interests: "Personal interests that support the target role.",
-};
+function sectionIsComplete(section: (typeof builderSections)[number], missingSections: Set<string>) {
+  return !missingSections.has(section);
+}
 
 export function CVBuilderHome() {
   const resume = useResumeStore((state) => state.activeResume);
   const hasHydrated = useResumeStore((state) => state.hasHydrated);
-  const updateResume = useResumeStore((state) => state.updateResume);
   const saveDraft = useResumeStore((state) => state.saveDraft);
   const resetDraft = useResumeStore((state) => state.resetDraft);
 
   if (!hasHydrated) {
     return (
-      <div className="rounded-[16px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)]">
+      <div className="rounded-[10px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-5 text-sm text-[var(--alouma-muted)]">
         Loading CV builder...
       </div>
     );
   }
+
+  const readinessScore = getReadinessScore(resume);
+  const missingItems = getMissingReadinessItems(resume);
+  const nextAction = getNextBestAction(resume);
+  const missingSections = new Set(missingItems.map((item) => item.section));
+  const matchReady = hasEnoughContentForMatch(resume);
 
   return (
     <>
@@ -51,57 +55,129 @@ export function CVBuilderHome() {
             </Button>
           </div>
         }
-        description={`Active resume: ${resume.meta.title}`}
+        description={`Active resume: ${resume.meta.title}. Move through the guided sections, then preview and match.`}
         title="CV Builder"
       />
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="grid gap-3 md:grid-cols-2">
-          {cvSections.map((section) => (
-            <Link
-              className="rounded-[16px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-5 transition-colors duration-150 hover:border-[var(--alouma-hairline-strong)] hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]"
-              href={`/cv/${section}`}
-              key={section}
-            >
-              <h2 className="font-semibold tracking-[-0.01em] text-[var(--alouma-jet)]">
-                {cvSectionLabels[section]}
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--alouma-muted)]">
-                {sectionDescriptions[section]}
-              </p>
-            </Link>
-          ))}
-        </div>
-        <Card>
-          <h2 className="text-lg font-semibold">Draft Status</h2>
-          <dl className="mt-4 grid gap-3 text-sm">
-            <div>
-              <dt className="font-semibold text-[var(--alouma-ink)]">Template</dt>
-              <dd className="mt-1">
-                <select
-                  className="min-h-11 w-full rounded-[12px] border border-[var(--alouma-hairline-strong)] bg-white px-3 text-sm text-[var(--alouma-jet)] outline-none transition focus:border-[var(--alouma-jet)] focus:ring-4 focus:ring-[var(--alouma-focus)]"
-                  onChange={(event) => updateResume({ template: event.target.value })}
-                  value={resume.template === "structured" ? "structured" : "novo_classic"}
+
+      <div className="grid min-w-0 gap-6 2xl:grid-cols-[minmax(640px,1fr)_minmax(420px,520px)]">
+        <section className="grid min-w-0 gap-4">
+          <Card className="rounded-[12px] p-5">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--alouma-muted-soft)]">
+                  Guided workspace
+                </p>
+                <h2 className="mt-2 text-xl font-semibold tracking-[-0.01em] text-[var(--alouma-jet)]">
+                  Build the draft in order, then inspect the rendered CV.
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--alouma-muted)]">
+                  Next: {nextAction.label}. The section hub keeps CV content inside the builder
+                  instead of the global app navigation.
+                </p>
+              </div>
+              <div className="w-full max-w-xs">
+                <div className="flex items-end justify-between gap-4">
+                  <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--alouma-muted-soft)]">
+                    Readiness
+                  </span>
+                  <span className="text-2xl font-semibold text-[var(--alouma-jet)]">
+                    {readinessScore}%
+                  </span>
+                </div>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--alouma-surface-strong)]">
+                  <div
+                    className="h-full rounded-full bg-[var(--alouma-jet)]"
+                    style={{ width: `${readinessScore}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <ButtonLink href={`/cv/${nextAction.section}`} variant="dark">
+                Continue next section
+              </ButtonLink>
+              <ButtonLink href="/cv/preview" variant="secondary">
+                Live preview
+              </ButtonLink>
+              <ButtonLink href="/match" variant={matchReady ? "primary" : "secondary"}>
+                Match to Job
+              </ButtonLink>
+            </div>
+          </Card>
+
+          <div className="grid gap-3 md:grid-cols-2">
+            {builderSections.map((section, index) => {
+              const complete = sectionIsComplete(section, missingSections);
+
+              return (
+                <Link
+                  className={cn(
+                    "rounded-[10px] border bg-[var(--alouma-surface)] p-4 transition-colors duration-150 hover:border-[var(--alouma-hairline-strong)] hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]",
+                    complete
+                      ? "border-[var(--alouma-hairline)]"
+                      : "border-[var(--alouma-hairline-strong)]",
+                  )}
+                  href={`/cv/${section}`}
+                  key={section}
                 >
-                  <option value="novo_classic">Essential</option>
-                  <option value="structured">Structured</option>
-                </select>
-              </dd>
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-semibold text-[var(--alouma-muted-soft)]">
+                        {String(index + 1).padStart(2, "0")}
+                      </p>
+                      <h2 className="mt-1 font-semibold tracking-[-0.01em] text-[var(--alouma-jet)]">
+                        {cvSectionLabels[section]}
+                      </h2>
+                    </div>
+                    <span
+                      className={cn(
+                        "rounded-full border px-2 py-1 text-[11px] font-semibold",
+                        complete
+                          ? "border-[#315944]/20 bg-[#315944]/10 text-[#315944]"
+                          : "border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] text-[var(--alouma-muted)]",
+                      )}
+                    >
+                      {complete ? "Ready" : "Needs work"}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-[var(--alouma-muted)]">
+                    {builderSectionDescriptions[section]}
+                  </p>
+                </Link>
+              );
+            })}
+          </div>
+
+          <details className="border-t border-[var(--alouma-hairline)] py-4 2xl:hidden">
+            <summary className="cursor-pointer text-sm font-semibold text-[var(--alouma-jet)]">
+              Design and live preview
+            </summary>
+            <div className="mt-4 grid gap-4">
+              <DesignPanel compact />
+              <PreviewPanel />
             </div>
-            <div>
-              <dt className="font-semibold text-[var(--alouma-ink)]">Accent</dt>
-              <dd className="text-[var(--alouma-muted)]">{resume.accentColor}</dd>
+          </details>
+        </section>
+
+        <aside className="hidden min-w-0 gap-4 2xl:grid">
+          <DesignPanel />
+          <section className="min-w-0 border-t border-[var(--alouma-hairline)] pt-4">
+            <div className="mb-3 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--alouma-muted-soft)]">
+                  Preview
+                </p>
+                <h2 className="mt-1 text-base font-semibold text-[var(--alouma-jet)]">
+                  Live CV output
+                </h2>
+              </div>
+              <ButtonLink className="min-h-9 px-3 text-xs" href="/cv/preview" variant="secondary">
+                Open
+              </ButtonLink>
             </div>
-            <div>
-              <dt className="font-semibold text-[var(--alouma-ink)]">Updated</dt>
-              <dd className="text-[var(--alouma-muted)]">
-                {new Date(resume.meta.updatedAt).toLocaleString()}
-              </dd>
-            </div>
-          </dl>
-          <ButtonLink className="mt-6 w-full" href="/cv/preview" variant="secondary">
-            Preview CV
-          </ButtonLink>
-        </Card>
+            <PreviewPanel />
+          </section>
+        </aside>
       </div>
     </>
   );

@@ -3,6 +3,7 @@
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { JobTrackerPanel } from "@/features/jobs/job-tracker-panel";
 import { Field, TextArea } from "@/components/ui/field";
 import { useResumeStore } from "@/lib/stores/resume-store";
 import type { Resume } from "@/schemas/resume";
@@ -65,13 +66,28 @@ export function MatchWorkspace() {
   return (
     <>
       <PageHeader
-        description="Stores a target job description on the active local draft."
+        description="Match the active local draft against a target role, then keep the opportunity visible in the tracker."
         title="Match to Job"
       />
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <Card>
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <section className="grid gap-4">
+          <Card variant="jet">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-white/55">
+              Hero workflow
+            </p>
+            <h2 className="mt-2 text-xl font-semibold tracking-[-0.01em]">
+              Tailor the draft before it leaves your workspace.
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/70">
+              This pass keeps matching deterministic and local. The entry point is now visible
+              while future AI/backend matching remains out of scope.
+            </p>
+          </Card>
+
+          <Card className="rounded-[12px] p-5">
           <Field label="Paste job description">
             <TextArea
+              className="min-h-64"
               onChange={(event) =>
                 updateResume((current) => ({
                   ...current,
@@ -111,8 +127,11 @@ export function MatchWorkspace() {
               Paste a job description to enable this deterministic placeholder.
             </p>
           ) : null}
-        </Card>
-        <Card>
+          </Card>
+        </section>
+
+        <aside className="grid content-start gap-4">
+          <Card className="rounded-[12px] p-5">
           <h2 className="text-lg font-semibold text-[var(--alouma-jet)]">Mock Result</h2>
           {result ? (
             <div className="mt-4 grid gap-3 text-sm">
@@ -137,7 +156,9 @@ export function MatchWorkspace() {
               Generate a match to see a deterministic placeholder result.
             </p>
           )}
-        </Card>
+          </Card>
+          <JobTrackerPanel />
+        </aside>
       </div>
     </>
   );

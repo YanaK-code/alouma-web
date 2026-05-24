@@ -1,13 +1,17 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Link from "next/link";
+import { DesignPanel } from "@/components/design/design-panel";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button, ButtonLink } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Field, TextArea, TextInput } from "@/components/ui/field";
+import { PreviewPanel } from "@/features/preview/preview-panel";
 import type { CvSection } from "@/lib/router/routes";
 import { cvSectionLabels } from "@/lib/router/routes";
+import { builderSectionDescriptions, builderSections } from "@/lib/resume/readiness";
 import { useResumeStore } from "@/lib/stores/resume-store";
+import { cn } from "@/lib/utils/cn";
 import type { Resume } from "@/schemas/resume";
 
 type ExperienceItem = Resume["experience"][number];
@@ -18,6 +22,9 @@ type CourseItem = Resume["courses"][number];
 type LicenseItem = Resume["licenses"][number];
 type AwardItem = Resume["awards"][number];
 type VolunteerItem = Resume["volunteer"][number];
+
+const fieldGrid = "grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))]";
+const wideFieldGrid = "grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))]";
 
 function makeId(prefix: string) {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -130,17 +137,26 @@ function clearSectionNote(resume: Resume, section: CvSection) {
 function ItemFrame({
   children,
   onRemove,
+  subtitle,
   title,
 }: {
   children: ReactNode;
   onRemove: () => void;
+  subtitle?: string;
   title: string;
 }) {
   return (
-    <div className="grid gap-4 rounded-[16px] border border-[var(--alouma-hairline)] bg-white p-4">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-[var(--alouma-jet)]">{title}</h2>
-        <Button onClick={onRemove} variant="ghost">
+    <div className="grid gap-4 border-t border-[var(--alouma-hairline)] pt-5 first:border-t-0 first:pt-0">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h2 className="text-sm font-semibold text-[var(--alouma-jet)]">{title}</h2>
+          {subtitle ? (
+            <p className="mt-1 truncate text-xs leading-5 text-[var(--alouma-muted)]">
+              {subtitle}
+            </p>
+          ) : null}
+        </div>
+        <Button className="min-h-8 px-2 text-xs" onClick={onRemove} variant="ghost">
           Remove
         </Button>
       </div>
@@ -151,7 +167,7 @@ function ItemFrame({
 
 function EmptySection({ label, onAdd }: { label: string; onAdd: () => void }) {
   return (
-    <div className="rounded-[16px] border border-dashed border-[var(--alouma-hairline-strong)] bg-[var(--alouma-canvas)] p-5">
+    <div className="border-t border-dashed border-[var(--alouma-hairline-strong)] py-5">
       <p className="text-sm leading-6 text-[var(--alouma-muted)]">
         No {label.toLowerCase()} added yet.
       </p>
@@ -171,7 +187,7 @@ export function SectionEditor({ section }: { section: CvSection }) {
 
   if (!hasHydrated) {
     return (
-      <div className="rounded-[16px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] p-6 text-sm text-[var(--alouma-muted)]">
+      <div className="border-t border-[var(--alouma-hairline)] py-6 text-sm text-[var(--alouma-muted)]">
         Loading {label.toLowerCase()} editor...
       </div>
     );
@@ -238,7 +254,10 @@ export function SectionEditor({ section }: { section: CvSection }) {
       <div className="grid gap-4">
         {items.length ? (
           items.map((item, index) => (
-            <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]" key={`${addLabel}-${index}`}>
+            <div
+              className="grid gap-3 [grid-template-columns:minmax(min(100%,240px),1fr)] sm:[grid-template-columns:minmax(0,1fr)_auto]"
+              key={`${addLabel}-${index}`}
+            >
               <TextInput
                 onChange={(event) => onChange(index, event.target.value)}
                 value={item}
@@ -264,7 +283,7 @@ export function SectionEditor({ section }: { section: CvSection }) {
 
   function renderBasics() {
     return (
-      <div className="grid gap-4">
+      <div className={wideFieldGrid}>
         {(
           [
             ["fullName", "Full name"],
@@ -326,9 +345,10 @@ export function SectionEditor({ section }: { section: CvSection }) {
                 experience: current.experience.filter((_, itemIndex) => itemIndex !== index),
               }))
             }
+            subtitle={[item.role, item.company].filter(Boolean).join(" at ")}
             title={`Experience ${index + 1}`}
           >
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className={wideFieldGrid}>
               <Field label="Role">
                 <TextInput
                   onChange={(event) =>
@@ -356,7 +376,7 @@ export function SectionEditor({ section }: { section: CvSection }) {
                 />
               </Field>
             </div>
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className={fieldGrid}>
               <Field label="Location">
                 <TextInput
                   onChange={(event) =>
@@ -446,9 +466,10 @@ export function SectionEditor({ section }: { section: CvSection }) {
                 education: current.education.filter((_, itemIndex) => itemIndex !== index),
               }))
             }
+            subtitle={[item.school, item.degree].filter(Boolean).join(" - ")}
             title={`Education ${index + 1}`}
           >
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className={wideFieldGrid}>
               <Field label="School">
                 <TextInput
                   onChange={(event) =>
@@ -476,7 +497,7 @@ export function SectionEditor({ section }: { section: CvSection }) {
                 />
               </Field>
             </div>
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className={fieldGrid}>
               <Field label="Location">
                 <TextInput
                   onChange={(event) =>
@@ -592,9 +613,10 @@ export function SectionEditor({ section }: { section: CvSection }) {
                 meta: clearSectionNote(current, section),
               }))
             }
+            subtitle={[item.name, item.proficiency].filter(Boolean).join(" - ")}
             title={`Language ${index + 1}`}
           >
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className={wideFieldGrid}>
               <Field label="Language">
                 <TextInput
                   onChange={(event) =>
@@ -660,6 +682,7 @@ export function SectionEditor({ section }: { section: CvSection }) {
                 meta: clearSectionNote(current, section),
               }))
             }
+            subtitle={item.name}
             title={`Project ${index + 1}`}
           >
             <Field label="Project name">
@@ -726,9 +749,10 @@ export function SectionEditor({ section }: { section: CvSection }) {
                 meta: clearSectionNote(current, section),
               }))
             }
+            subtitle={[item.name, item.provider].filter(Boolean).join(" - ")}
             title={`Course ${index + 1}`}
           >
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className={fieldGrid}>
               <Field label="Course">
                 <TextInput
                   onChange={(event) =>
@@ -808,9 +832,10 @@ export function SectionEditor({ section }: { section: CvSection }) {
                 meta: clearSectionNote(current, section),
               }))
             }
+            subtitle={[item.name, item.issuer].filter(Boolean).join(" - ")}
             title={`License ${index + 1}`}
           >
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className={fieldGrid}>
               <Field label="License">
                 <TextInput
                   onChange={(event) =>
@@ -890,9 +915,10 @@ export function SectionEditor({ section }: { section: CvSection }) {
                 meta: clearSectionNote(current, section),
               }))
             }
+            subtitle={[item.name, item.issuer].filter(Boolean).join(" - ")}
             title={`Award ${index + 1}`}
           >
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className={fieldGrid}>
               <Field label="Award">
                 <TextInput
                   onChange={(event) =>
@@ -986,9 +1012,10 @@ export function SectionEditor({ section }: { section: CvSection }) {
                 meta: clearSectionNote(current, section),
               }))
             }
+            subtitle={[item.role, item.organization].filter(Boolean).join(" at ")}
             title={`Volunteer ${index + 1}`}
           >
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className={wideFieldGrid}>
               <Field label="Role">
                 <TextInput
                   onChange={(event) =>
@@ -1020,7 +1047,7 @@ export function SectionEditor({ section }: { section: CvSection }) {
                 />
               </Field>
             </div>
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className={fieldGrid}>
               <Field label="Location">
                 <TextInput
                   onChange={(event) =>
@@ -1154,23 +1181,91 @@ export function SectionEditor({ section }: { section: CvSection }) {
       <PageHeader
         actions={
           <div className="flex gap-2">
+            <ButtonLink href="/cv" variant="ghost">
+              Sections
+            </ButtonLink>
             <Button onClick={saveDraft} variant="secondary">
               Save Draft
             </Button>
             <Button onClick={clearSection} variant="ghost">
               Clear
             </Button>
+            <ButtonLink href="/match" variant="secondary">
+              Match
+            </ButtonLink>
             <ButtonLink href="/cv/preview" variant="secondary">
               Preview
             </ButtonLink>
           </div>
         }
-        description="Changes save to the active local draft and update preview output."
+        description="Focused editing inside the guided builder. Changes update the active local draft and preview output."
         title={label}
       />
-      <Card className="max-w-4xl">
-        {renderSection()}
-      </Card>
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[200px_minmax(560px,1fr)] 2xl:grid-cols-[200px_minmax(560px,1fr)_minmax(420px,520px)]">
+        <aside className="hidden xl:block">
+          <nav className="sticky top-6 grid gap-1 border-l border-[var(--alouma-hairline)] pl-3">
+            <p className="px-2 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--alouma-muted-soft)]">
+              CV sections
+            </p>
+            {builderSections.map((item) => (
+              <Link
+                className={cn(
+                  "border-l-2 border-transparent px-3 py-2 text-sm font-medium text-[var(--alouma-muted)] transition hover:border-[var(--alouma-hairline-strong)] hover:text-[var(--alouma-jet)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--alouma-focus)]",
+                  item === section && "border-[var(--alouma-jet)] bg-white/45 text-[var(--alouma-jet)]",
+                )}
+                href={`/cv/${item}`}
+                key={item}
+              >
+                {cvSectionLabels[item]}
+              </Link>
+            ))}
+          </nav>
+        </aside>
+
+        <section className="grid min-w-0 gap-6">
+          <section className="min-w-0">
+            <div className="mb-6 max-w-2xl">
+              <h2 className="text-lg font-semibold text-[var(--alouma-jet)]">{label}</h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--alouma-muted)]">
+                {section in builderSectionDescriptions
+                  ? builderSectionDescriptions[section as keyof typeof builderSectionDescriptions]
+                  : "Additional CV details preserved for renderer compatibility."}
+              </p>
+            </div>
+            {renderSection()}
+          </section>
+
+          <details className="border-t border-[var(--alouma-hairline)] py-4 2xl:hidden">
+            <summary className="cursor-pointer text-sm font-semibold text-[var(--alouma-jet)]">
+              Design and live preview
+            </summary>
+            <div className="mt-4 grid gap-4">
+              <DesignPanel compact />
+              <PreviewPanel />
+            </div>
+          </details>
+        </section>
+
+        <aside className="hidden min-w-0 gap-4 2xl:grid">
+          <DesignPanel />
+          <section className="min-w-0 border-t border-[var(--alouma-hairline)] pt-4">
+            <div className="mb-3 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--alouma-muted-soft)]">
+                  Preview
+                </p>
+                <h2 className="mt-1 text-base font-semibold text-[var(--alouma-jet)]">
+                  Live output
+                </h2>
+              </div>
+              <ButtonLink className="min-h-9 px-3 text-xs" href="/cv/preview" variant="secondary">
+                Open
+              </ButtonLink>
+            </div>
+            <PreviewPanel />
+          </section>
+        </aside>
+      </div>
     </>
   );
 }

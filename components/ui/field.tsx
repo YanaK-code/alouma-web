@@ -9,8 +9,10 @@ export function Field({
   label: string;
 }) {
   return (
-    <label className="grid gap-2 text-sm font-semibold text-[var(--alouma-ink)]">
-      <span>{label}</span>
+    <label className="grid min-w-0 gap-1.5 text-sm font-medium text-[var(--alouma-ink)]">
+      <span className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--alouma-muted)]">
+        {label}
+      </span>
       {children}
     </label>
   );
@@ -20,7 +22,7 @@ export function TextInput({ className, ...props }: InputHTMLAttributes<HTMLInput
   return (
     <input
       className={cn(
-        "min-h-11 rounded-[12px] border border-[var(--alouma-hairline-strong)] bg-white px-4 text-sm text-[var(--alouma-jet)] outline-none transition placeholder:text-[var(--alouma-muted-soft)] focus:border-[var(--alouma-jet)] focus:ring-4 focus:ring-[var(--alouma-focus)]",
+        "h-10 min-w-0 rounded-[6px] border border-[var(--alouma-hairline-strong)] bg-white px-3 text-sm text-[var(--alouma-jet)] outline-none transition placeholder:text-[var(--alouma-muted-soft)] focus:border-[var(--alouma-jet)] focus:ring-[3px] focus:ring-[var(--alouma-focus)]",
         className,
       )}
       {...props}
@@ -32,7 +34,7 @@ export function TextArea({ className, ...props }: TextareaHTMLAttributes<HTMLTex
   return (
     <textarea
       className={cn(
-        "min-h-36 rounded-[12px] border border-[var(--alouma-hairline-strong)] bg-white p-4 text-sm leading-6 text-[var(--alouma-jet)] outline-none transition placeholder:text-[var(--alouma-muted-soft)] focus:border-[var(--alouma-jet)] focus:ring-4 focus:ring-[var(--alouma-focus)]",
+        "min-h-28 min-w-0 resize-y rounded-[6px] border border-[var(--alouma-hairline-strong)] bg-white p-3 text-sm leading-6 text-[var(--alouma-jet)] outline-none transition placeholder:text-[var(--alouma-muted-soft)] focus:border-[var(--alouma-jet)] focus:ring-[3px] focus:ring-[var(--alouma-focus)]",
         className,
       )}
       {...props}

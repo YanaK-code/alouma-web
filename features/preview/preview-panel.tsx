@@ -4,7 +4,7 @@ import { CVPreviewFrame } from "@/components/preview/cv-preview-frame";
 import { buildHtml } from "@/cv-renderer/buildHtml";
 import { useResumeStore } from "@/lib/stores/resume-store";
 
-export function PreviewPanel() {
+export function PreviewPanel({ defaultZoom = "fit" }: { defaultZoom?: "fit" | "actual" }) {
   const resume = useResumeStore((state) => state.activeResume);
   const hasHydrated = useResumeStore((state) => state.hasHydrated);
 
@@ -16,5 +16,5 @@ export function PreviewPanel() {
     );
   }
 
-  return <CVPreviewFrame html={buildHtml(resume)} />;
+  return <CVPreviewFrame defaultZoom={defaultZoom} html={buildHtml(resume)} />;
 }

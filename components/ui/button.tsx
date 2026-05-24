@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
 
@@ -20,13 +20,27 @@ const variants = {
 };
 
 const base =
-  "inline-flex min-h-11 items-center justify-center rounded-[12px] border px-5 text-sm font-semibold leading-none transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]";
+  "inline-flex min-h-10 items-center justify-center rounded-[8px] border px-4 text-sm font-semibold leading-none transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]";
 
 const disabled =
   "disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-[var(--alouma-hairline)] disabled:bg-[var(--alouma-surface-strong)] disabled:text-[var(--alouma-muted-soft)] disabled:shadow-none";
 
+const contrastStyles: Partial<Record<NonNullable<ButtonProps["variant"]>, CSSProperties>> = {
+  dark: {
+    backgroundColor: "var(--alouma-jet)",
+    borderColor: "var(--alouma-jet)",
+    color: "#ffffff",
+  },
+  "on-color": {
+    backgroundColor: "#ffffff",
+    borderColor: "#ffffff",
+    color: "var(--alouma-jet)",
+  },
+};
+
 export function Button({
   className,
+  style,
   variant = "primary",
   type = "button",
   ...props
@@ -34,6 +48,7 @@ export function Button({
   return (
     <button
       className={cn(base, variants[variant], disabled, className)}
+      style={{ ...contrastStyles[variant], ...style }}
       type={type}
       {...props}
     />
@@ -44,16 +59,19 @@ export function ButtonLink({
   children,
   className,
   href,
+  style,
   variant = "primary",
 }: {
   children: ReactNode;
   className?: string;
   href: string;
+  style?: CSSProperties;
   variant?: ButtonProps["variant"];
 }) {
   return (
     <Link
       className={cn(base, variants[variant], className)}
+      style={{ ...contrastStyles[variant], ...style }}
       href={href}
     >
       {children}
