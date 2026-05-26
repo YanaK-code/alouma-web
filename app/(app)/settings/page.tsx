@@ -20,6 +20,7 @@ export default function SettingsPage() {
   const paywallPlaceholderComplete = useAppStore(
     (state) => state.paywallPlaceholderComplete,
   );
+  const localDemoModeActive = useAppStore((state) => state.localDemoModeActive);
   const resetPlaceholderFlow = useAppStore((state) => state.resetPlaceholderFlow);
   const resetDraft = useResumeStore((state) => state.resetDraft);
 
@@ -55,6 +56,12 @@ export default function SettingsPage() {
               <dt className="font-semibold">Placeholder paywall step</dt>
               <dd className="text-[var(--alouma-muted)]">
                 {placeholderStatus(paywallPlaceholderComplete)}
+              </dd>
+            </div>
+            <div className="flex justify-between gap-4 py-2">
+              <dt className="font-semibold">Local demo mode</dt>
+              <dd className="text-[var(--alouma-muted)]">
+                {localDemoModeActive ? "active" : "not active"}
               </dd>
             </div>
           </dl>

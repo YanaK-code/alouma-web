@@ -1,30 +1,24 @@
 "use client";
 
-import Link from "next/link";
+import { AIHelperPlaceholder } from "@/components/ai/ai-helper-placeholder";
 import { DesignPanel } from "@/components/design/design-panel";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CVSectionSidebar } from "@/features/cv-builder/cv-section-sidebar";
 import { PreviewPanel } from "@/features/preview/preview-panel";
-import { cvSectionLabels } from "@/lib/router/routes";
 import {
-  builderSectionDescriptions,
-  builderSections,
-  getMissingReadinessItems,
   getNextBestAction,
   getReadinessScore,
   hasEnoughContentForMatch,
 } from "@/lib/resume/readiness";
 import { useResumeStore } from "@/lib/stores/resume-store";
-import { cn } from "@/lib/utils/cn";
-
-function sectionIsComplete(section: (typeof builderSections)[number], missingSections: Set<string>) {
-  return !missingSections.has(section);
-}
 
 export function CVBuilderHome() {
   const resume = useResumeStore((state) => state.activeResume);
+  const hasActiveDraft = useResumeStore((state) => state.hasActiveDraft);
   const hasHydrated = useResumeStore((state) => state.hasHydrated);
+  const createBaseDraft = useResumeStore((state) => state.createBaseDraft);
   const saveDraft = useResumeStore((state) => state.saveDraft);
   const resetDraft = useResumeStore((state) => state.resetDraft);
 
@@ -36,10 +30,39 @@ export function CVBuilderHome() {
     );
   }
 
+  if (!hasActiveDraft) {
+    return (
+      <>
+        <PageHeader
+          description="Start with a reusable base CV, then create matched copies for specific jobs."
+          title="CV Builder"
+        />
+        <Card className="max-w-2xl rounded-[12px] p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--alouma-muted-soft)]">
+            No active draft
+          </p>
+          <h2 className="mt-2 text-xl font-semibold tracking-[-0.01em] text-[var(--alouma-jet)]">
+            Create a base CV to begin.
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-[var(--alouma-muted)]">
+            The builder edits the active local draft. Once created, changes persist in browser
+            storage and the draft appears on your dashboard and Saved CVs list.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <Button onClick={() => createBaseDraft()} variant="dark">
+              Create New CV
+            </Button>
+            <ButtonLink href="/saved" variant="secondary">
+              Open Saved CVs
+            </ButtonLink>
+          </div>
+        </Card>
+      </>
+    );
+  }
+
   const readinessScore = getReadinessScore(resume);
-  const missingItems = getMissingReadinessItems(resume);
   const nextAction = getNextBestAction(resume);
-  const missingSections = new Set(missingItems.map((item) => item.section));
   const matchReady = hasEnoughContentForMatch(resume);
 
   return (
@@ -59,7 +82,9 @@ export function CVBuilderHome() {
         title="CV Builder"
       />
 
-      <div className="grid min-w-0 gap-6 2xl:grid-cols-[minmax(640px,1fr)_minmax(420px,520px)]">
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[220px_minmax(0,1fr)] 2xl:grid-cols-[220px_minmax(560px,1fr)_minmax(420px,520px)]">
+        <CVSectionSidebar />
+
         <section className="grid min-w-0 gap-4">
           <Card className="rounded-[12px] p-5">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -105,63 +130,25 @@ export function CVBuilderHome() {
             </div>
           </Card>
 
-          <div className="grid gap-3 md:grid-cols-2">
-            {builderSections.map((section, index) => {
-              const complete = sectionIsComplete(section, missingSections);
-
-              return (
-                <Link
-                  className={cn(
-                    "rounded-[10px] border bg-[var(--alouma-surface)] p-4 transition-colors duration-150 hover:border-[var(--alouma-hairline-strong)] hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]",
-                    complete
-                      ? "border-[var(--alouma-hairline)]"
-                      : "border-[var(--alouma-hairline-strong)]",
-                  )}
-                  href={`/cv/${section}`}
-                  key={section}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-semibold text-[var(--alouma-muted-soft)]">
-                        {String(index + 1).padStart(2, "0")}
-                      </p>
-                      <h2 className="mt-1 font-semibold tracking-[-0.01em] text-[var(--alouma-jet)]">
-                        {cvSectionLabels[section]}
-                      </h2>
-                    </div>
-                    <span
-                      className={cn(
-                        "rounded-full border px-2 py-1 text-[11px] font-semibold",
-                        complete
-                          ? "border-[#315944]/20 bg-[#315944]/10 text-[#315944]"
-                          : "border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] text-[var(--alouma-muted)]",
-                      )}
-                    >
-                      {complete ? "Ready" : "Needs work"}
-                    </span>
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-[var(--alouma-muted)]">
-                    {builderSectionDescriptions[section]}
-                  </p>
-                </Link>
-              );
-            })}
-          </div>
+          <AIHelperPlaceholder
+            actionLabel="Check status"
+            description="AI review will check clarity, gaps, and role fit once the secure AI gateway is connected."
+            title="Overall CV review helper"
+          />
 
           <details className="border-t border-[var(--alouma-hairline)] py-4 2xl:hidden">
             <summary className="cursor-pointer text-sm font-semibold text-[var(--alouma-jet)]">
-              Design and live preview
+              Live preview and personalization
             </summary>
             <div className="mt-4 grid gap-4">
-              <DesignPanel compact />
               <PreviewPanel />
+              <DesignPanel compact />
             </div>
           </details>
         </section>
 
         <aside className="hidden min-w-0 gap-4 2xl:grid">
-          <DesignPanel />
-          <section className="min-w-0 border-t border-[var(--alouma-hairline)] pt-4">
+          <section className="min-w-0">
             <div className="mb-3 flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--alouma-muted-soft)]">
@@ -177,6 +164,7 @@ export function CVBuilderHome() {
             </div>
             <PreviewPanel />
           </section>
+          <DesignPanel />
         </aside>
       </div>
     </>

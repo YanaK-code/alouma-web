@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -22,9 +23,13 @@ function formatUpdatedAt(value: string) {
 }
 
 export function DashboardHome() {
+  const router = useRouter();
   const resume = useResumeStore((state) => state.activeResume);
   const savedDrafts = useResumeStore((state) => state.savedDrafts);
+  const hasActiveDraft = useResumeStore((state) => state.hasActiveDraft);
   const hasHydrated = useResumeStore((state) => state.hasHydrated);
+  const createBaseDraft = useResumeStore((state) => state.createBaseDraft);
+  const loadDraftById = useResumeStore((state) => state.loadDraftById);
   const saveDraft = useResumeStore((state) => state.saveDraft);
 
   if (!hasHydrated) {
@@ -35,12 +40,88 @@ export function DashboardHome() {
     );
   }
 
-  const candidateName = resume.basics.fullName.trim() || "your draft";
+  function createNewCV() {
+    createBaseDraft();
+    router.push("/cv");
+  }
+
+  function openDraft(id: string) {
+    if (loadDraftById(id)) {
+      router.push("/cv");
+    }
+  }
+
   const readinessScore = getReadinessScore(resume);
   const missingItems = getMissingReadinessItems(resume);
   const nextAction = getNextBestAction(resume);
   const matchReady = hasEnoughContentForMatch(resume);
-  const recentDrafts = savedDrafts.slice(0, 3);
+  const recentDrafts = savedDrafts.filter((draft) => !draft.deletedAt).slice(0, 3);
+
+  if (!hasActiveDraft) {
+    return (
+      <>
+        <PageHeader
+          description="Create a base CV or reopen a saved local draft to start working."
+          title="Dashboard"
+        />
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+          <Card className="rounded-[12px] p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--alouma-muted-soft)]">
+              Current CV
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.015em] text-[var(--alouma-jet)]">
+              No active CV draft yet
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--alouma-muted)]">
+              Start with a reusable base CV. Matched CVs will be created as job-specific copies
+              later, keeping the base clean.
+            </p>
+            <Button className="mt-5" onClick={createNewCV} variant="dark">
+              Create New CV
+            </Button>
+          </Card>
+
+          <Card className="rounded-[12px] p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--alouma-muted-soft)]">
+              Saved CVs
+            </p>
+            <h2 className="mt-2 text-base font-semibold text-[var(--alouma-jet)]">
+              {recentDrafts.length ? "Open a recent draft" : "No saved drafts yet"}
+            </h2>
+            <div className="mt-4 grid gap-2">
+              {recentDrafts.length ? (
+                recentDrafts.map((draft) => (
+                  <div
+                    className="flex items-center justify-between gap-3 rounded-[8px] border border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] px-3 py-2"
+                    key={draft.id}
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-[var(--alouma-jet)]">
+                        {draft.title}
+                      </p>
+                      <p className="mt-1 text-xs text-[var(--alouma-muted)]">
+                        {draft.kind === "base" ? "Base CV" : "Matched CV"} ·{" "}
+                        {formatUpdatedAt(draft.updatedAt)}
+                      </p>
+                    </div>
+                    <Button className="min-h-8 px-3 text-xs" onClick={() => openDraft(draft.id)} variant="secondary">
+                      Open
+                    </Button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm leading-6 text-[var(--alouma-muted)]">
+                  Local drafts will appear here after you create or save one.
+                </p>
+              )}
+            </div>
+          </Card>
+        </div>
+      </>
+    );
+  }
+
+  const candidateName = resume.basics.fullName.trim() || "your draft";
 
   return (
     <>
@@ -83,6 +164,9 @@ export function DashboardHome() {
               </div>
             </div>
             <div className="mt-6 flex flex-wrap gap-2">
+              <Button onClick={createNewCV} variant="secondary">
+                Create New CV
+              </Button>
               <ButtonLink href="/cv" variant="dark">
                 Continue building
               </ButtonLink>
@@ -168,15 +252,21 @@ export function DashboardHome() {
               {recentDrafts.length ? (
                 recentDrafts.map((draft) => (
                   <div
-                    className="rounded-[8px] border border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] px-3 py-2"
-                    key={draft.meta.id}
+                    className="flex items-center justify-between gap-3 rounded-[8px] border border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] px-3 py-2"
+                    key={draft.id}
                   >
-                    <p className="truncate text-sm font-semibold text-[var(--alouma-jet)]">
-                      {draft.meta.title}
-                    </p>
-                    <p className="mt-1 text-xs text-[var(--alouma-muted)]">
-                      {formatUpdatedAt(draft.meta.updatedAt)}
-                    </p>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-[var(--alouma-jet)]">
+                        {draft.title}
+                      </p>
+                      <p className="mt-1 text-xs text-[var(--alouma-muted)]">
+                        {draft.kind === "base" ? "Base CV" : "Matched CV"} ·{" "}
+                        {formatUpdatedAt(draft.updatedAt)}
+                      </p>
+                    </div>
+                    <Button className="min-h-8 px-3 text-xs" onClick={() => openDraft(draft.id)} variant="secondary">
+                      Open
+                    </Button>
                   </div>
                 ))
               ) : (

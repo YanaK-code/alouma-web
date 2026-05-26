@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/lib/stores/app-store";
@@ -10,18 +11,24 @@ import { useAppStore } from "@/lib/stores/app-store";
  */
 export function LoginScreen() {
   const router = useRouter();
-  const completeAuthPlaceholder = useAppStore(
-    (state) => state.completeAuthPlaceholder,
-  );
+  const [placeholderMessage, setPlaceholderMessage] = useState<string | null>(null);
+  const enterLocalDemoMode = useAppStore((state) => state.enterLocalDemoMode);
   const resetPlaceholderFlow = useAppStore((state) => state.resetPlaceholderFlow);
 
-  function handleContinue() {
-    completeAuthPlaceholder();
-    router.replace("/onboarding");
+  function showAuthPlaceholder() {
+    setPlaceholderMessage(
+      "Account login will be connected when the secure backend is enabled.",
+    );
+  }
+
+  function handleEnterDemoMode() {
+    enterLocalDemoMode();
+    router.replace("/dashboard");
   }
 
   function handleReset() {
     resetPlaceholderFlow();
+    setPlaceholderMessage(null);
     router.replace("/login");
   }
 
@@ -46,24 +53,53 @@ export function LoginScreen() {
           </div>
         </aside>
         <div className="p-8 sm:p-12">
-          <p className="alouma-eyebrow">Local placeholder</p>
+          <p className="alouma-eyebrow">Auth placeholder</p>
           <h1 className="alouma-display-section mt-4 text-4xl">
-            Create your Alouma account
+            Sign in to Alouma
           </h1>
           <p className="mt-5 text-base leading-7 text-[var(--alouma-muted)]">
-            Your CV workspace will live here. For now, this is a placeholder before real
-            Sign in with Apple and secure account sync are connected.
+            This is the future account entry point. Google, Apple, and secure
+            account sync are not connected in this local build.
           </p>
-          <div className="mt-8 grid gap-3 sm:grid-cols-2">
-            <Button onClick={handleContinue}>Continue</Button>
-            <Button onClick={handleContinue} variant="secondary">
-              Already have an account
+          <div className="mt-8 grid gap-3">
+            <Button onClick={showAuthPlaceholder} variant="secondary">
+              Continue with Google
+            </Button>
+            <Button onClick={showAuthPlaceholder} variant="secondary">
+              Continue with Apple
             </Button>
           </div>
-          <p className="mt-6 rounded-[12px] border border-[var(--alouma-hairline)] bg-[var(--alouma-canvas)] p-4 text-sm leading-6 text-[var(--alouma-muted)]">
-            This button only advances a local development flag. It does not sign in,
-            verify identity, or create an account.
-          </p>
+          {placeholderMessage ? (
+            <div
+              aria-live="polite"
+              className="mt-5 rounded-[12px] border border-[var(--alouma-hairline-strong)] bg-[var(--alouma-canvas)] p-4 text-sm leading-6 text-[var(--alouma-muted)]"
+              role="status"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <p>{placeholderMessage}</p>
+                <button
+                  className="rounded-[6px] text-xs font-semibold uppercase tracking-[0.16em] text-[var(--alouma-mustard-strong)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]"
+                  onClick={() => setPlaceholderMessage(null)}
+                  type="button"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          ) : null}
+          <div className="mt-6 rounded-[12px] border border-dashed border-[var(--alouma-hairline-strong)] bg-[var(--alouma-canvas)] p-4">
+            <p className="text-sm font-semibold text-[var(--alouma-jet)]">
+              Local demo mode
+            </p>
+            <p className="mt-2 text-sm leading-6 text-[var(--alouma-muted)]">
+              Skips the placeholder onboarding and opens the internal dashboard.
+              This does not sign in, create an account, verify identity, or grant
+              production access.
+            </p>
+            <Button className="mt-4" onClick={handleEnterDemoMode} variant="dark">
+              Skip to dashboard
+            </Button>
+          </div>
           <button
             className="mt-6 rounded-[6px] text-xs font-semibold uppercase tracking-[0.16em] text-[var(--alouma-mustard-strong)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--alouma-focus)]"
             onClick={handleReset}

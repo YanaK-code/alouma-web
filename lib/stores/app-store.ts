@@ -29,10 +29,12 @@ type AppState = {
   authPlaceholderComplete: boolean;
   onboardingPlaceholderComplete: boolean;
   paywallPlaceholderComplete: boolean;
+  localDemoModeActive: boolean;
   hasHydrated: boolean;
   completeAuthPlaceholder: () => void;
   completeOnboardingPlaceholder: () => void;
   completePaywallPlaceholder: () => void;
+  enterLocalDemoMode: () => void;
   resetPlaceholderFlow: () => void;
   setHasHydrated: (value: boolean) => void;
 };
@@ -41,6 +43,7 @@ const initialFlags = {
   authPlaceholderComplete: false,
   onboardingPlaceholderComplete: false,
   paywallPlaceholderComplete: false,
+  localDemoModeActive: false,
 };
 
 export const useAppStore = create<AppState>()(
@@ -53,6 +56,7 @@ export const useAppStore = create<AppState>()(
           authPlaceholderComplete: true,
           onboardingPlaceholderComplete: false,
           paywallPlaceholderComplete: false,
+          localDemoModeActive: false,
         }),
       completeOnboardingPlaceholder: () =>
         set({
@@ -62,6 +66,13 @@ export const useAppStore = create<AppState>()(
       completePaywallPlaceholder: () =>
         set({
           paywallPlaceholderComplete: true,
+        }),
+      enterLocalDemoMode: () =>
+        set({
+          authPlaceholderComplete: true,
+          onboardingPlaceholderComplete: true,
+          paywallPlaceholderComplete: true,
+          localDemoModeActive: true,
         }),
       resetPlaceholderFlow: () => {
         clearLocalOnboardingPersistence();
@@ -79,6 +90,7 @@ export const useAppStore = create<AppState>()(
         authPlaceholderComplete: state.authPlaceholderComplete,
         onboardingPlaceholderComplete: state.onboardingPlaceholderComplete,
         paywallPlaceholderComplete: state.paywallPlaceholderComplete,
+        localDemoModeActive: state.localDemoModeActive,
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);

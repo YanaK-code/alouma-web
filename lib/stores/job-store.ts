@@ -24,6 +24,8 @@ export type TrackedJob = {
   role: string;
   status: JobStatus;
   matchScore?: number;
+  jobDescription?: string;
+  createdAt: string;
   updatedAt: string;
 };
 
@@ -44,6 +46,7 @@ const initialJobs: TrackedJob[] = [
     role: "Operations Manager",
     status: "Matched",
     matchScore: 82,
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
@@ -52,6 +55,7 @@ const initialJobs: TrackedJob[] = [
     role: "Customer Operations Lead",
     status: "Saved",
     matchScore: 74,
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
 ];
@@ -59,6 +63,13 @@ const initialJobs: TrackedJob[] = [
 type JobTrackerState = {
   trackedJobs: TrackedJob[];
   hasHydrated: boolean;
+  addTrackedJob: (job: {
+    company?: string;
+    role?: string;
+    jobDescription?: string;
+    matchScore?: number;
+    status?: JobStatus;
+  }) => string;
   addPlaceholderJob: () => void;
   cycleJobStatus: (id: string) => void;
   setHasHydrated: (value: boolean) => void;
@@ -82,6 +93,28 @@ export const useJobTrackerStore = create<JobTrackerState>()(
     (set) => ({
       trackedJobs: initialJobs,
       hasHydrated: false,
+      addTrackedJob: (job) => {
+        const now = new Date().toISOString();
+        const id = makeJobId();
+
+        set((state) => ({
+          trackedJobs: [
+            {
+              id,
+              company: job.company?.trim() || "Target company",
+              role: job.role?.trim() || "Target role",
+              status: job.status ?? "Matched",
+              matchScore: job.matchScore,
+              jobDescription: job.jobDescription,
+              createdAt: now,
+              updatedAt: now,
+            },
+            ...state.trackedJobs,
+          ],
+        }));
+
+        return id;
+      },
       addPlaceholderJob: () =>
         set((state) => ({
           trackedJobs: [
@@ -90,6 +123,7 @@ export const useJobTrackerStore = create<JobTrackerState>()(
               company: "Target company",
               role: "New tracked role",
               status: "Saved",
+              createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             },
             ...state.trackedJobs,

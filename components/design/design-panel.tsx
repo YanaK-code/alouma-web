@@ -38,7 +38,13 @@ function activeAccentForTemplate(resume: Resume) {
 
 export function DesignPanel({ compact = false }: { compact?: boolean }) {
   const resume = useResumeStore((state) => state.activeResume);
+  const hasActiveDraft = useResumeStore((state) => state.hasActiveDraft);
   const updateResume = useResumeStore((state) => state.updateResume);
+
+  if (!hasActiveDraft) {
+    return null;
+  }
+
   const activeTemplate = resume.template === "structured" ? "structured" : "novo_classic";
   const activeAccent = activeAccentForTemplate(resume).toLowerCase();
 

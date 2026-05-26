@@ -1,17 +1,18 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { AIHelperPlaceholder } from "@/components/ai/ai-helper-placeholder";
 import { DesignPanel } from "@/components/design/design-panel";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Field, TextArea, TextInput } from "@/components/ui/field";
+import { CVSectionSidebar } from "@/features/cv-builder/cv-section-sidebar";
 import { PreviewPanel } from "@/features/preview/preview-panel";
 import type { CvSection } from "@/lib/router/routes";
 import { cvSectionLabels } from "@/lib/router/routes";
-import { builderSectionDescriptions, builderSections } from "@/lib/resume/readiness";
+import { builderSectionDescriptions } from "@/lib/resume/readiness";
 import { useResumeStore } from "@/lib/stores/resume-store";
-import { cn } from "@/lib/utils/cn";
 import type { Resume } from "@/schemas/resume";
 
 type ExperienceItem = Resume["experience"][number];
@@ -180,7 +181,9 @@ function EmptySection({ label, onAdd }: { label: string; onAdd: () => void }) {
 
 export function SectionEditor({ section }: { section: CvSection }) {
   const resume = useResumeStore((state) => state.activeResume);
+  const hasActiveDraft = useResumeStore((state) => state.hasActiveDraft);
   const hasHydrated = useResumeStore((state) => state.hasHydrated);
+  const createBaseDraft = useResumeStore((state) => state.createBaseDraft);
   const updateResume = useResumeStore((state) => state.updateResume);
   const saveDraft = useResumeStore((state) => state.saveDraft);
   const label = cvSectionLabels[section];
@@ -190,6 +193,39 @@ export function SectionEditor({ section }: { section: CvSection }) {
       <div className="border-t border-[var(--alouma-hairline)] py-6 text-sm text-[var(--alouma-muted)]">
         Loading {label.toLowerCase()} editor...
       </div>
+    );
+  }
+
+  if (!hasActiveDraft) {
+    return (
+      <>
+        <PageHeader
+          actions={
+            <Button onClick={() => createBaseDraft()} variant="dark">
+              Create New CV
+            </Button>
+          }
+          description="Create or open a local CV draft before editing sections."
+          title={label}
+        />
+        <Card className="max-w-2xl rounded-[12px] p-6">
+          <h2 className="text-xl font-semibold tracking-[-0.01em] text-[var(--alouma-jet)]">
+            No active CV draft
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-[var(--alouma-muted)]">
+            Section editing is connected to the active local draft. Create a base CV or open a
+            saved draft to continue.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <Button onClick={() => createBaseDraft()} variant="dark">
+              Create New CV
+            </Button>
+            <ButtonLink href="/saved" variant="secondary">
+              Open Saved CVs
+            </ButtonLink>
+          </div>
+        </Card>
+      </>
     );
   }
 
@@ -313,12 +349,19 @@ export function SectionEditor({ section }: { section: CvSection }) {
 
   function renderSummary() {
     return (
-      <Field label="Professional summary">
-        <TextArea
-          onChange={(event) => updateResume({ summary: event.target.value })}
-          value={resume.summary}
+      <div className="grid gap-4">
+        <Field label="Professional summary">
+          <TextArea
+            onChange={(event) => updateResume({ summary: event.target.value })}
+            value={resume.summary}
+          />
+        </Field>
+        <AIHelperPlaceholder
+          actionLabel="Check status"
+          description="AI helper will suggest a clearer version here once the secure AI gateway is connected."
+          title="Summary helper"
         />
-      </Field>
+      </div>
     );
   }
 
@@ -336,6 +379,11 @@ export function SectionEditor({ section }: { section: CvSection }) {
 
     return (
       <div className="grid gap-5">
+        <AIHelperPlaceholder
+          actionLabel="Check status"
+          description="AI helper will suggest stronger bullet options here after gateway integration."
+          title="Experience bullet helper"
+        />
         {resume.experience.map((item, index) => (
           <ItemFrame
             key={item.id}
@@ -550,21 +598,30 @@ export function SectionEditor({ section }: { section: CvSection }) {
   }
 
   function renderSkills() {
-    return renderStringList({
-      addLabel: "Skill",
-      items: resume.skills,
-      onAdd: () => updateResume((current) => ({ ...current, skills: [...current.skills, ""] })),
-      onChange: (index, value) =>
-        updateResume((current) => ({
-          ...current,
-          skills: current.skills.map((item, itemIndex) => (itemIndex === index ? value : item)),
-        })),
-      onRemove: (index) =>
-        updateResume((current) => ({
-          ...current,
-          skills: current.skills.filter((_, itemIndex) => itemIndex !== index),
-        })),
-    });
+    return (
+      <div className="grid gap-4">
+        <AIHelperPlaceholder
+          actionLabel="Check status"
+          description="AI helper will suggest relevant skills after it can safely review the active CV and target role."
+          title="Skills suggestion helper"
+        />
+        {renderStringList({
+          addLabel: "Skill",
+          items: resume.skills,
+          onAdd: () => updateResume((current) => ({ ...current, skills: [...current.skills, ""] })),
+          onChange: (index, value) =>
+            updateResume((current) => ({
+              ...current,
+              skills: current.skills.map((item, itemIndex) => (itemIndex === index ? value : item)),
+            })),
+          onRemove: (index) =>
+            updateResume((current) => ({
+              ...current,
+              skills: current.skills.filter((_, itemIndex) => itemIndex !== index),
+            })),
+        })}
+      </div>
+    );
   }
 
   function renderProgramsTools() {
@@ -1181,9 +1238,6 @@ export function SectionEditor({ section }: { section: CvSection }) {
       <PageHeader
         actions={
           <div className="flex gap-2">
-            <ButtonLink href="/cv" variant="ghost">
-              Sections
-            </ButtonLink>
             <Button onClick={saveDraft} variant="secondary">
               Save Draft
             </Button>
@@ -1201,26 +1255,8 @@ export function SectionEditor({ section }: { section: CvSection }) {
         description="Focused editing inside the guided builder. Changes update the active local draft and preview output."
         title={label}
       />
-      <div className="grid min-w-0 gap-6 xl:grid-cols-[200px_minmax(560px,1fr)] 2xl:grid-cols-[200px_minmax(560px,1fr)_minmax(420px,520px)]">
-        <aside className="hidden xl:block">
-          <nav className="sticky top-6 grid gap-1 border-l border-[var(--alouma-hairline)] pl-3">
-            <p className="px-2 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--alouma-muted-soft)]">
-              CV sections
-            </p>
-            {builderSections.map((item) => (
-              <Link
-                className={cn(
-                  "border-l-2 border-transparent px-3 py-2 text-sm font-medium text-[var(--alouma-muted)] transition hover:border-[var(--alouma-hairline-strong)] hover:text-[var(--alouma-jet)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--alouma-focus)]",
-                  item === section && "border-[var(--alouma-jet)] bg-white/45 text-[var(--alouma-jet)]",
-                )}
-                href={`/cv/${item}`}
-                key={item}
-              >
-                {cvSectionLabels[item]}
-              </Link>
-            ))}
-          </nav>
-        </aside>
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[220px_minmax(560px,1fr)] 2xl:grid-cols-[220px_minmax(560px,1fr)_minmax(420px,520px)]">
+        <CVSectionSidebar activeSection={section} />
 
         <section className="grid min-w-0 gap-6">
           <section className="min-w-0">
@@ -1237,18 +1273,17 @@ export function SectionEditor({ section }: { section: CvSection }) {
 
           <details className="border-t border-[var(--alouma-hairline)] py-4 2xl:hidden">
             <summary className="cursor-pointer text-sm font-semibold text-[var(--alouma-jet)]">
-              Design and live preview
+              Live preview and personalization
             </summary>
             <div className="mt-4 grid gap-4">
-              <DesignPanel compact />
               <PreviewPanel />
+              <DesignPanel compact />
             </div>
           </details>
         </section>
 
         <aside className="hidden min-w-0 gap-4 2xl:grid">
-          <DesignPanel />
-          <section className="min-w-0 border-t border-[var(--alouma-hairline)] pt-4">
+          <section className="min-w-0">
             <div className="mb-3 flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--alouma-muted-soft)]">
@@ -1264,6 +1299,7 @@ export function SectionEditor({ section }: { section: CvSection }) {
             </div>
             <PreviewPanel />
           </section>
+          <DesignPanel />
         </aside>
       </div>
     </>
