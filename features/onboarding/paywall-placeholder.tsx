@@ -34,7 +34,7 @@ export function PaywallPlaceholder() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--alouma-canvas)] px-4 py-16 text-[var(--alouma-jet)] sm:px-6 lg:px-8">
+    <div className="min-h-[calc(100vh-9rem)] py-10 text-[var(--alouma-jet)]">
       <section className="mx-auto grid max-w-5xl items-stretch gap-8 lg:grid-cols-[5fr_7fr]">
         <div className="flex flex-col justify-center">
           <p className="alouma-eyebrow">Placeholder paywall</p>
@@ -91,6 +91,6 @@ export function PaywallPlaceholder() {
           </button>
         </article>
       </section>
-    </main>
+    </div>
   );
 }

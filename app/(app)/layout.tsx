@@ -4,8 +4,8 @@ import { RouteGate } from "@/components/navigation/route-gate";
 
 export default function MainAppLayout({ children }: { children: ReactNode }) {
   return (
-    <RouteGate area="app">
-      <AppShell>{children}</AppShell>
-    </RouteGate>
+    <AppShell>
+      <RouteGate area="app">{children}</RouteGate>
+    </AppShell>
   );
 }

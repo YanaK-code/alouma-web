@@ -7,6 +7,8 @@ import { useAppStore } from "@/lib/stores/app-store";
 
 type GateArea = "auth" | "funnel" | "app";
 
+const safeAppEscapeRoutes = new Set(["/dashboard", "/profile", "/settings"]);
+
 function isAllowed(area: GateArea, pathname: string, nextRoute: string) {
   if (pathname === nextRoute) {
     return true;
@@ -18,6 +20,10 @@ function isAllowed(area: GateArea, pathname: string, nextRoute: string) {
 
   if (area === "funnel") {
     return pathname === nextRoute;
+  }
+
+  if (safeAppEscapeRoutes.has(pathname)) {
+    return true;
   }
 
   return nextRoute === "/dashboard";
@@ -72,21 +78,21 @@ export function RouteGate({
 
   if (!hasHydrated) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--alouma-canvas)] p-8">
+      <div className="flex min-h-[50vh] items-center justify-center">
         <p className="rounded-[12px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] px-5 py-4 text-sm text-[var(--alouma-muted)]">
           Loading placeholder flow...
         </p>
-      </main>
+      </div>
     );
   }
 
   if (!isAllowed(area, pathname, nextRoute)) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--alouma-canvas)] p-8">
+      <div className="flex min-h-[50vh] items-center justify-center">
         <p className="rounded-[12px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] px-5 py-4 text-sm text-[var(--alouma-muted)]">
           Redirecting...
         </p>
-      </main>
+      </div>
     );
   }
 

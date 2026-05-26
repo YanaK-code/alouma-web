@@ -418,8 +418,8 @@ export function OnboardingWizard() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--alouma-canvas)] px-4 py-8 text-[var(--alouma-jet)] sm:px-6 sm:py-12 lg:px-8">
-      <section className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-2xl flex-col">
+    <div className="text-[var(--alouma-jet)]">
+      <section className="mx-auto flex min-h-[calc(100vh-9rem)] w-full max-w-2xl flex-col py-6 sm:py-10">
         <div>
           <div className="flex items-center justify-between gap-4">
             <p className="alouma-eyebrow text-[var(--alouma-muted)]">
@@ -543,6 +543,6 @@ export function OnboardingWizard() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

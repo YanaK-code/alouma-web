@@ -33,7 +33,7 @@ export function LoginScreen() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[var(--alouma-canvas)] px-4 py-16 text-[var(--alouma-jet)] sm:px-6 lg:px-8">
+    <div className="flex min-h-[calc(100vh-9rem)] items-center justify-center py-10 text-[var(--alouma-jet)]">
       <section className="grid w-full max-w-5xl overflow-hidden rounded-[24px] border border-[var(--alouma-hairline)] bg-[var(--alouma-surface)] lg:grid-cols-[5fr_7fr]">
         <aside className="hidden flex-col justify-between border-r border-[var(--alouma-hairline)] bg-[var(--alouma-surface-soft)] p-12 lg:flex">
           <div>
@@ -109,6 +109,6 @@ export function LoginScreen() {
           </button>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
